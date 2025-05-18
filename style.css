@@ -1,0 +1,306 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px); /* å¯é€‰ï¼šä»Žä¸‹å¾€ä¸Š */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+    background-color: rgb(194, 194, 194);
+}
+
+#chatScreen {
+    background-color: rgb(239,241,243);
+    width: 333px;
+    height: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+#chatBanner {
+    background-color: rgb(47, 9, 74);
+    height: 50px;
+    width: 100%;
+    align-items: center;
+    display: flex;
+}
+
+#back {
+    color: rgb(242, 242, 242);
+    font-size: 25px;
+    padding-left: 16px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+#chatTitleBlock {
+    display: inline-block;
+    padding-left: 9px;
+    position: relative;
+}
+
+#chatTitle {
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    padding-bottom: 1px;
+    font-style: italic;
+}
+
+#chatSubTitle {
+    color:white;
+    font-size: 10px;
+    padding-left: 1px;
+}
+
+#typingArea {
+    position: absolute;
+    left: 11px;
+    bottom: 8px;
+    display: flex;
+    color: rgb(156, 156, 156);
+    align-items: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+    pointer-events: none;
+}
+
+#typingArea:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+
+#typingDots {
+    width: 35px;
+    display: inline-block;
+}
+
+#typer {
+    display: inline-block;
+}
+
+#chatBox {
+    overflow-y: scroll;
+    height: 500px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(80, 80, 80, 0.8);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+.message {
+    padding-left: 5px;
+    padding-top: 5px;
+    display: flex;
+    animation: fadeIn 0.4s ease;
+}
+
+.systemMessage {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto; 
+    padding: 1px 10px 1px 10px;
+    color: rgb(255, 255, 255);
+    font-size: 15px;
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 10px;
+    animation: fadeIn 0.4s ease;
+}
+
+.avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block;
+}
+
+.userName {
+    font-size: 15px;
+    color: black;
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+.bubble {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    padding: 8px 10px;
+    max-width: 80%;
+    font-family: sans-serif;
+    word-break: break-word; 
+    margin: 5px;
+    display: block;
+    width: fit-content;
+    animation: fadeIn 0.4s ease;
+}
+
+.bubble::after {
+    content: "";
+    position: absolute;
+    bottom: 24px;
+    left: -11px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: white;
+    border-bottom: 0;
+    margin-bottom: -10px;
+}
+
+#userList {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.userAvatar {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block;
+    border: 2px white solid;
+    margin-left: -10px;
+}
+
+#extraPeopleContainer {
+    display: inline-block;
+    color:rgb(194, 194, 194);
+    font-size: 13px;
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+.container {
+    width: 80%;
+}
+
+.end-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.5s ease-out forwards;
+    gap: 10px;
+}
+
+.end-line {
+    height: 1px;
+    background-color: #888;
+    width: 0;
+    animation: expandLine 0.5s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+.end-text {
+    color: #555;
+    font-weight: bold;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.left {
+    animation-name: expandLineLeft;
+}
+.right {
+    animation-name: expandLineRight;
+}
+
+@keyframes expandLineLeft {
+    from { width: 0; }
+    to { width: 30px; } /* å¯è°ƒæ•´ */
+}
+
+@keyframes expandLineRight {
+    from { width: 0; }
+    to { width: 30px; } /* å¯è°ƒæ•´ */
+}
+
+textarea {
+    resize: none;
+}
+
+#speakerInput {
+    height: 500px;
+    overflow-y: scroll;
+    display: inline-block;
+    margin-bottom: 19px;
+}
+
+#scriptInput {
+    height: 500px;
+    overflow-y: scroll;
+    /* display: inline-block; */
+    /* margin-bottom: 19px; */
+}
+
+.popup-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(128, 128, 128, 0.5);
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    display: none;
+}
+
+.popup-content {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width: 80%;
+    background-color: white;
+    padding: 20px;
+    overflow: auto;
+}
+
+#speakerEditForm {
+    border: 1px black solid;
+    padding: 3px;
+}
+
+#speakerEditPreview {   
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#speakerEditPreview th, td {
+    border: 1px solid black;
+    border-bottom: 2px solid black;
+}
+

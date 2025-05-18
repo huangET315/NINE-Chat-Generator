@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nine Generator</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div style="display: flex; gap: 15px;">
+        <div style="display: inline-block;">
+            <div id="chatScreen">
+                <div id="chatBanner">
+                    <div id="back"><</div>
+                    <div id="chatTitleBlock">
+                        <div id="chatTitle">Random Title</div>
+                        <div id="chatSubTitle">For casual chat</div>
+                    </div>
+                    <div id="userList">
+                        <img class="userAvatar" src="assets/place-holder.png">
+                        <img class="userAvatar" src="assets/ph2.png">
+                        <img class="userAvatar" src="assets/place-holder.png">
+                        <div id="extraPeopleContainer">+&nbsp;<span id="extraPeople">15</span></div>
+                    </div>
+                </div>
+                <div id="chatBox"></div>
+                <div id="typingArea" class="hidden">
+                    <img id="typingDots" src="assets/typing-dots.gif"><div id="typer">Zero</div>&nbsp;is typing
+                </div>
+            </div>
+            <button id="play" onclick="play()">Play</button>
+            <button id="extract" onclick="extract()">Extract</button>
+            <button id="load" onclick="load()">Load</button>
+        </div>
+
+        <div>
+            <form id="speakerEditForm">
+                <label for="speakerEditForm-name">Name: </label>
+                <input id="speakerEditForm-name">
+                <br>
+                <label for="speakerEditForm-avatar">Avatar: </label>
+                <input id="speakerEditForm-avatar" type="file" accept="image/png, image/jpeg">
+                <br>
+                <div id="messagePreview" class="message">
+                    <img id="messagePreview-avatar" class="avatar" src="assets/ph2.png">
+                    <div class="container">
+                        <div id="messagePreview-name" class="userName">Name</div>
+                    </div>
+                </div>
+                <button id="addSpeaker" type="button">Add Speaker</button>
+            </form>
+            <div style="height: 400px; overflow-y: scroll; border: 1px black solid;">
+                <table id="speakerEditPreview">
+                </table>
+            </div>
+        </div>
+
+        <textarea id="scriptInput", cols="50"></textarea>
+        <script src="script.js"></script>
+    </div>
+</body>
+</html>
