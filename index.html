@@ -14,8 +14,8 @@
                 <div id="chatBanner">
                     <div id="back"><</div>
                     <div id="chatTitleBlock">
-                        <div id="chatTitle">Random Title</div>
-                        <div id="chatSubTitle">For casual chat</div>
+                        <div id="chatTitle">Title</div>
+                        <div id="chatSubtitle">Subtitle</div>
                     </div>
                     <div id="userList">
                         <img class="userAvatar" src="assets/place-holder.png">
@@ -35,6 +35,13 @@
         </div>
 
         <div>
+            <div style="border: 1px black solid;">
+                <label for="bannerEdit-title">Title: </label>
+                <input id="bannerEdit-title" oninput="updateTitleFromInput()" value="Title">
+                <br>
+                <label for="bannerEdit-subtitle">Subtitle: </label>
+                <input id="bannerEdit-subtitle" oninput="updateTitleFromInput()" value="Subtitle">
+            </div>
             <form id="speakerEditForm">
                 <label for="speakerEditForm-name">Name: </label>
                 <input id="speakerEditForm-name">

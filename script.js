@@ -13,6 +13,8 @@ let previesContainer = '';
 
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
+const bannerStorageKey = "banner"
+const settingVersion = "1.0"
 
 function sleep(s) {
     if (s <= 0) {
@@ -315,9 +317,22 @@ async function extract() {
 
     let script = localStorage.getItem(scriptStorageKey)
 
+    let title = localStorage.getItem(bannerStorageKey)
+    try {
+        title = JSON.parse(title)
+    } catch (err) {
+        console.error(err)
+        console.log({title})
+        alert("Error occured when parsing title banner, see dev console for more detail")
+        return
+    }
+
+
     let result = {
+        version: settingVersion,
         speaker: speaker,
-        script: script
+        script: script,
+        title: title
     }
 
     result = JSON.stringify(result)
@@ -344,16 +359,47 @@ async function load() {
 
     if (
         !result ||
-        typeof result !== 'object' ||
-        !('speaker' in result) ||
-        !('script' in result)
+        typeof result !== 'object'
     ) {
         alert("Invalid format in clipboard data");
         return;
     }
 
+    if (result.version != settingVersion) {
+        if (!confirm(`The setting you're loading is from a older (or higher somehow) version of current website
+            It's usually fine to load, but it might cause something unexpect to happend, do you want to continue?
+            Current website version: ${settingVersion}
+            Loading setting version: ${result.version}`)) {return}
+    }
+
     localStorage.setItem(speakerStorageKey, JSON.stringify(result.speaker))
-    localStorage.setItem(scriptStorageKey, String(result.script))
     updateSpeakerPreview()
+
+    localStorage.setItem(scriptStorageKey, String(result.script))
     scriptInput.value = result.script
+
+    localStorage.setItem(bannerStorageKey, JSON.stringify(result.title))
+    updateTitleFromStorage()
 }
+
+function updateTitleFromInput() {
+    let title = document.getElementById("bannerEdit-title").value
+    let subtitle = document.getElementById("bannerEdit-subtitle").value
+    document.getElementById("chatTitle").innerText = title
+    document.getElementById("chatSubtitle").innerText = subtitle
+    localStorage.setItem(bannerStorageKey, JSON.stringify({title: title, subtitle: subtitle}))
+}
+
+function updateTitleFromStorage() {
+    let banner = localStorage.getItem(bannerStorageKey)
+    if (!banner) {return}
+    banner = JSON.parse(banner)
+
+    document.getElementById("bannerEdit-title").value = banner.title
+    document.getElementById("bannerEdit-subtitle").value = banner.subtitle
+
+    document.getElementById("chatTitle").innerText = banner.title
+    document.getElementById("chatSubtitle").innerText = banner.subtitle
+}
+
+updateTitleFromStorage()
