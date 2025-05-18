@@ -20,6 +20,7 @@ See the [Settings](./Settings/) folder for some tutorials! Copy everything insde
 # Knowing Issues
 Issues I already know and will be fix soon
 - Did not optmized for mobile or low width device
+- Can't pause after play, have to refresh the page
 # WIP
 Things I'm currently working on
 - Avatar preview at top right
