@@ -5,6 +5,9 @@ See the [Settings](./Settings/) folder for some tutorials! Copy everything insde
 
 - [All functions](#Functions)
     - [speak](##speak)
+- [Knowing Issues](#Knowing_Issues)
+- [WIP](#WIP)
+- [Ideas](#Ideas)
 
 # Functions
 ## speak
@@ -14,3 +17,15 @@ See the [Settings](./Settings/) folder for some tutorials! Copy everything insde
 > wait(seconds)
 ## system
 > system(content)
+# Knowing Issues
+Issues I already know and will be fix soon
+- Did not optmized for mobile or low width device
+# WIP
+Things I'm currently working on
+- Avatar preview at top right
+- More functions / expand uses
+# Ideas
+Ideas I have but have no ideas how to, followed by the chance they actually come true
+- Pause, End (low)
+- Export as video or gif (low)
+- Block programming like Scratch when creating animation (low)
