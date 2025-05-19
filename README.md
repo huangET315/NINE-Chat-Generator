@@ -68,7 +68,7 @@ Issues I already know and will be fix soon
 - Can't pause / end when playing
 # WIP
 Things I'm currently working on
+- Export as video
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
-- Export as video or gif (low)
 - Block programming like Scratch when creating animation (low)
