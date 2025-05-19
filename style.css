@@ -121,6 +121,10 @@ body {
     animation: fadeIn 0.4s ease;
 }
 
+.message.self-message {
+    padding-right: 5px;
+}
+
 .systemMessage {
     width: fit-content;
     margin-left: auto;
@@ -148,9 +152,15 @@ body {
     padding-left: 5px;
 }
 
+.self-message .userName {
+    padding-left: 0px;
+    padding-right: 5px;
+    text-align: right;
+}
+
 .bubble {
     position: relative;
-    background: white;
+    background-color: white;
     border-radius: 10px;
     padding: 8px 10px;
     max-width: 80%;
@@ -165,7 +175,7 @@ body {
 .bubble::after {
     content: "";
     position: absolute;
-    top: 10px;
+    top: 5px;
     left: -11px;
     width: 0;
     height: 0;
@@ -173,6 +183,17 @@ body {
     border-top-color: white;
     border-bottom: 0;
     margin-bottom: -10px;
+}
+
+.self-message .bubble{
+    background-color: rgb(167, 80, 222);
+    color: white;
+    margin-left: auto;
+}
+
+.self-message .bubble::after{
+    border-top-color: rgb(167, 80, 222);
+    left: auto;
 }
 
 #userList {
@@ -205,7 +226,12 @@ body {
 
 .container {
     width: 80%;
-    padding-left: 5px;
+    padding-left: 7px;
+}
+
+.self-message .container {
+    padding-left: 0px;
+    padding-right: 7px;
 }
 
 .end-wrapper {

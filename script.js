@@ -11,6 +11,7 @@ let bannerAvatars = document.getElementById("userList").querySelectorAll(".userA
 
 let previesSpeaker = -1;
 let previesContainer = '';
+let pov = -1
 
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
@@ -106,6 +107,12 @@ async function speak(id, name, avatar, content, typingTime) {
 
         previesContainer = container
         previesSpeaker = id
+
+        if (id === pov) {
+            message.classList.add("self-message")
+
+            message.insertBefore(container, img); // 交换两个元素位置
+        }
     }
 
     previesContainer.appendChild(bubble)
@@ -125,7 +132,6 @@ function parseParams(str) {
     return JSON.parse(str)
 }
 
-
 async function resolveCodeLine(speaker, codeLine) {
     if (codeLine.length <= 0) {return}
     if (codeLine.trim().startsWith("//")) {return}
@@ -136,6 +142,7 @@ async function resolveCodeLine(speaker, codeLine) {
     switch (funcName) {
         case "speak":
             await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2])
+            break
         case "wait":
             await sleep(params[0])
             break
@@ -149,6 +156,12 @@ async function resolveCodeLine(speaker, codeLine) {
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
             break
+        case "setPOV":
+            if (pov !== -1) {
+                alert("You should only setPOV once in a setting!")
+                return
+            }
+            pov = params[0]
     }
 }
 
@@ -156,7 +169,8 @@ async function startAnimation(speaker, actions) {
     chatBox.textContent = "";
     previesSpeaker = -1;
     previesContainer = '';
-    
+    pov = -1;
+
     await sleep(1);
 
     for (let codeLine of actions.split("\n")) {
