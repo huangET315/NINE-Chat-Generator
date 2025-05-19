@@ -54,7 +54,7 @@ Issues I already know and will be fix soon
 - Can't pause / end when playing
 # WIP
 Things I'm currently working on
-- More functions / expand uses
+- Function "speak" can create message bubble from "self" (POV)
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
 - Export as video or gif (low)
