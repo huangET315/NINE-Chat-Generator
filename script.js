@@ -7,6 +7,7 @@ let avatarInput = document.getElementById("speakerEditForm-avatar")
 let nameInput = document.getElementById("speakerEditForm-name")
 let speakerEditPreview = document.getElementById("speakerEditPreview")
 let scriptInput = document.getElementById("scriptInput")
+let bannerAvatars = document.getElementById("userList").querySelectorAll(".userAvatar")
 
 let previesSpeaker = -1;
 let previesContainer = '';
@@ -153,6 +154,9 @@ async function resolveCodeLine(speaker, codeLine) {
 
 async function startAnimation(speaker, actions) {
     chatBox.textContent = "";
+    previesSpeaker = -1;
+    previesContainer = '';
+    
     await sleep(1);
 
     for (let codeLine of actions.split("\n")) {
@@ -258,10 +262,25 @@ function updateSpeakerPreview() {
         }
     }
 
+    for (let a of bannerAvatars) {
+        a.style.display = "none"
+    }
+
     let index = 0
     for (let speaker of storded) {
         speakerEditPreview.appendChild(buildSpeakerPreviewTr(index, speaker.name, speaker.avatar))
+        if (index < 3) {
+            bannerAvatars[index].src = speaker.avatar
+            bannerAvatars[index].style.display = "inline-block"
+        }
         index ++
+    }
+
+    let extra = index - 3
+    if (extra > 0) {
+        document.getElementById("extraPeople").innerText = `+${extra}`
+    } else {
+        document.getElementById("extraPeople").innerTex = ""
     }
 }
 
@@ -395,11 +414,10 @@ function updateTitleFromStorage() {
     if (!banner) {return}
     banner = JSON.parse(banner)
 
-    document.getElementById("bannerEdit-title").value = banner.title
-    document.getElementById("bannerEdit-subtitle").value = banner.subtitle
+    document.getElementById("bannerEdit-title").value = banner.title || "Title"
+    document.getElementById("bannerEdit-subtitle").value = banner.subtitle || "SubTitle"
 
-    document.getElementById("chatTitle").innerText = banner.title
-    document.getElementById("chatSubtitle").innerText = banner.subtitle
+    updateTitleFromInput()
 }
 
 updateTitleFromStorage()
