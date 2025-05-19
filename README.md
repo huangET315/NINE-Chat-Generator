@@ -9,6 +9,9 @@ Their is also a tutorial video at https://youtu.be/ELf5mXja6QA
 # Directory
 - [All functions](#Functions)
     - [speak](##speak)
+    - [wait](##wait)
+    - [system](##system)
+    - [setPOV](##setPOV)
 - [Knowing Issues](#Knowing_Issues)
 - [WIP](#WIP)
 - [Ideas](#Ideas)
@@ -49,12 +52,22 @@ Their is also a tutorial video at https://youtu.be/ELf5mXja6QA
 | -------- | ------- | ------- |
 | content | string | The content of system message |
 
+## setPOV
+> setPOV(speakerIndex)
+>
+> // Example:
+>
+> setPOV(1)
+
+| Parament | Type | Note |
+| -------- | ------- | ------- |
+| speakerIndex | number | The speaker you wish to be the POV (so their message will come from the right), can only set one speaker as pov |
+
 # Knowing Issues
 Issues I already know and will be fix soon
 - Can't pause / end when playing
 # WIP
 Things I'm currently working on
-- Function "speak" can create message bubble from "self" (POV)
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
 - Export as video or gif (low)
