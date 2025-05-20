@@ -7,11 +7,19 @@ let avatarInput = document.getElementById("speakerEditForm-avatar")
 let nameInput = document.getElementById("speakerEditForm-name")
 let speakerEditPreview = document.getElementById("speakerEditPreview")
 let scriptInput = document.getElementById("scriptInput")
+let lineNumbers = document.getElementById("lineNumbers")
 let bannerAvatars = document.getElementById("userList").querySelectorAll(".userAvatar")
+
+let playStopButton = document.getElementById("play-stop")
+let pauseResumeButton = document.getElementById("pause-resume")
 
 let previesSpeaker = -1;
 let previesContainer = '';
 let pov = -1
+let isPlaying = false
+let isPausing = false
+
+let lineNum = -1
 
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
@@ -68,7 +76,7 @@ function buildBubble(content) {
     return div
 }
 
-async function speak(id, name, avatar, content, typingTime) {
+async function speak(id, name, avatar, content, typingTime, lineNum) {
     if (id === previesSpeaker) {
         await sleep(0.2)
     }
@@ -89,6 +97,7 @@ async function speak(id, name, avatar, content, typingTime) {
     if (id != previesSpeaker) {
         let message = document.createElement("div")
         message.classList.add("message")
+        message.dataset.createdBy = lineNum
         chatBox.appendChild(message)
         
         let img = document.createElement("img")
@@ -111,7 +120,7 @@ async function speak(id, name, avatar, content, typingTime) {
         if (id === pov) {
             message.classList.add("self-message")
 
-            message.insertBefore(container, img); // 交换两个元素位置
+            message.insertBefore(container, img);
         }
     }
 
@@ -132,7 +141,7 @@ function parseParams(str) {
     return JSON.parse(str)
 }
 
-async function resolveCodeLine(speaker, codeLine) {
+async function resolveCodeLine(speaker, codeLine, lineNum) {
     if (codeLine.length <= 0) {return}
     if (codeLine.trim().startsWith("//")) {return}
 
@@ -141,7 +150,7 @@ async function resolveCodeLine(speaker, codeLine) {
 
     switch (funcName) {
         case "speak":
-            await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2])
+            await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2], lineNum)
             break
         case "wait":
             await sleep(params[0])
@@ -150,6 +159,7 @@ async function resolveCodeLine(speaker, codeLine) {
             let shouldScroll = isScrolledToBottom(chatBox)
             let div = document.createElement("div")
             div.classList.add("systemMessage")
+            div.dataset.createdBy = lineNum
             div.innerText = params[0]
             chatBox.appendChild(div)
             if (shouldScroll) {
@@ -165,6 +175,13 @@ async function resolveCodeLine(speaker, codeLine) {
     }
 }
 
+async function waitUntilUnPause() {
+    while (isPausing) {
+        await sleep(0.1);
+    }
+    return;
+}
+
 async function startAnimation(speaker, actions) {
     chatBox.textContent = "";
     previesSpeaker = -1;
@@ -173,18 +190,68 @@ async function startAnimation(speaker, actions) {
 
     await sleep(1);
 
+    lineNum = 0
+
     for (let codeLine of actions.split("\n")) {
-        await resolveCodeLine(speaker, codeLine)
+        if (!isPlaying) {
+            return;
+        }
+        if (isPausing) {
+            await waitUntilUnPause()
+        }
+        await resolveCodeLine(speaker, codeLine, lineNum)
+        lineNum ++
     }
 
     await sleep(2);
     end()
 }
 
-async function play() {
-    let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
-    let script = scriptInput.value
-    startAnimation(speaker, script);
+async function playOrStop() {
+    switch (playStopButton.innerText) {
+        case "Play":
+            let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
+            let script = scriptInput.value
+
+            playStopButton.innerText = "Stop"
+
+            pauseResumeButton.style.display = "inline-block"
+            pauseResumeButton.innerText = "Pause"
+
+            isPlaying = true
+            isPausing = false
+
+            await startAnimation(speaker, script);
+
+            playStopButton.innerText = "Play"
+
+            pauseResumeButton.style.display = "none"
+            pauseResumeButton.innerText = "Pause"
+
+            isPlaying = false
+            break
+        case "Stop":
+            playStopButton.innerText = "Play"
+
+            pauseResumeButton.style.display = "none"
+            pauseResumeButton.innerText = "Pause"
+
+            isPlaying = false
+            break
+    }
+}
+
+function pauseOrResume() {
+    switch(pauseResumeButton.innerText) {
+        case "Pause":
+            isPausing = true
+            pauseResumeButton.innerText = "Resume"
+            break
+        case "Resume":
+            isPausing = false
+            pauseResumeButton.innerText = "Pause"
+            break;
+    }
 }
 
 for (let ele of document.querySelectorAll('.popup-bg')) {
@@ -331,9 +398,18 @@ document.getElementById("addSpeaker").addEventListener("click", () => {
 
 scriptInput.value = localStorage.getItem(scriptStorageKey)
 
-scriptInput.addEventListener("input", () => {
+function updateScriptInput() {
     localStorage.setItem(scriptStorageKey, scriptInput.value)
+
+    let lines = scriptInput.value.split("\n").length;
+    lineNumbers.textContent = Array.from({ length: lines }, (_, i) => i + 1).join("\n");
+}
+
+scriptInput.addEventListener("scroll", () => {
+    lineNumbers.scrollHeight = scriptInput.scrollHeight
 })
+
+updateScriptInput()
 
 updateSpeakerPreview()
 

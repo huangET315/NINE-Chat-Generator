@@ -1,7 +1,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px); /* å¯é€‰ï¼šä»Žä¸‹å¾€ä¸Š */
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -268,12 +268,32 @@ body {
 
 @keyframes expandLineLeft {
     from { width: 0; }
-    to { width: 30px; } /* å¯è°ƒæ•´ */
+    to { width: 30px; }
 }
 
 @keyframes expandLineRight {
     from { width: 0; }
-    to { width: 30px; } /* å¯è°ƒæ•´ */
+    to { width: 30px; }
+}
+
+#scriptWrapper {
+  display: flex;
+  border: 1px solid #ccc;
+  font-family: monospace;
+  height: 300px;
+  overflow: hidden;
+}
+
+#lineNumbers {
+    background-color: #f0f0f0;
+    color: #888;
+    padding: 5px;
+    text-align: right;
+    user-select: none;
+    line-height: 1.5;
+    white-space: pre;
+    overflow: hidden;
+    font-size: 14px;
 }
 
 textarea {
@@ -288,10 +308,15 @@ textarea {
 }
 
 #scriptInput {
-    height: 500px;
-    overflow-y: scroll;
-    /* display: inline-block; */
-    /* margin-bottom: 19px; */
+    flex: 1;
+    padding: 5px;
+    border: none;
+    resize: none;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    outline: none;
+    overflow: auto;
 }
 
 .popup-bg {

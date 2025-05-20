@@ -29,10 +29,11 @@
                     <img id="typingDots" src="assets/typing-dots.gif"><div id="typer">Zero</div>&nbsp;is typing
                 </div>
             </div>
-            <button id="play" onclick="play()">Play</button>
+            <button id="play-stop" onclick="playOrStop()">Play</button>
+            <button id="pause-resume" onclick="pauseOrResume()" style="display: none;">Pause</button>
             <button id="extract" onclick="extract()">Extract</button>
             <button id="load" onclick="load()">Load</button>
-            <button onclick="window.open('https://github.com/huangET315/NINE-Chat-Generator/tree/main')">Github</button>
+            <button onclick="window.open('https://github.com/huangET315/NINE-Chat-Generator')">Github</button>
         </div>
 
         <div>
@@ -63,8 +64,10 @@
                 </table>
             </div>
         </div>
-
-        <textarea id="scriptInput", cols="50"></textarea>
+        <div id="scriptWrapper">
+            <div id="lineNumbers"></div>
+            <textarea id="scriptInput" cols="50" oninput="updateScriptInput()"></textarea>
+        </div>
         <script src="script.js"></script>
     </div>
 </body>
