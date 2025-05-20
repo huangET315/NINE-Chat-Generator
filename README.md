@@ -73,6 +73,7 @@ Issues I already know and will be fix soon
   
 # WIP
 Things I'm currently working on
+- Emotes
 - Function hint
   
 # Ideas
