@@ -327,6 +327,10 @@ function updateSpeakerPreview() {
 
     speakerEditPreview.innerHTML = "<tr><th>Index</th><th>Name</th><th>Avatar</th><th>Delete</th></tr>"
     
+    for (let a of bannerAvatars) {
+        a.style.display = "none"
+    }
+
     if (storded === null) {
         return
     }
@@ -341,10 +345,6 @@ function updateSpeakerPreview() {
         } else {
             return
         }
-    }
-
-    for (let a of bannerAvatars) {
-        a.style.display = "none"
     }
 
     let index = 0
