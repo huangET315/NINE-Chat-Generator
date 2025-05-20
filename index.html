@@ -46,7 +46,7 @@
             </div>
             <form id="speakerEditForm">
                 <label for="speakerEditForm-name">Name: </label>
-                <input id="speakerEditForm-name">
+                <input id="speakerEditForm-name" oninput="messagePreviewName.innerText = nameInput.value" autocomplete="off">
                 <br>
                 <label for="speakerEditForm-avatar">Avatar: </label>
                 <input id="speakerEditForm-avatar" type="file" accept="image/png, image/jpeg">
@@ -57,7 +57,7 @@
                         <div id="messagePreview-name" class="userName">Name</div>
                     </div>
                 </div>
-                <button id="addSpeaker" type="button">Add Speaker</button>
+                <button id="addSpeaker" type="button" onclick="addSpeakerOnClick()">Add Speaker</button>
             </form>
             <div style="height: 400px; overflow-y: scroll; border: 1px black solid;">
                 <table id="speakerEditPreview">

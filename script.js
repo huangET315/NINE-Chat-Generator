@@ -21,6 +21,8 @@ let isPausing = false
 
 let lineNum = -1
 
+let previesLineCount = -1;
+
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
 const bannerStorageKey = "banner"
@@ -254,29 +256,6 @@ function pauseOrResume() {
     }
 }
 
-for (let ele of document.querySelectorAll('.popup-bg')) {
-    ele.addEventListener("click", (e) => {
-        if (e.target != ele) return
-        ele.style.display = "none"
-    })
-}
-
-avatarInput.addEventListener("change", () => {
-    const file = avatarInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-        const base64String = reader.result;
-        messagePreviewAvatar.src = base64String
-    };
-
-    reader.readAsDataURL(file);
-})
-
-nameInput.addEventListener("input", () => {
-    messagePreviewName.innerText = nameInput.value
-})
-
 function buildSpeakerPreviewTr(index, name, avatar) {
     let tr = document.createElement("tr");
 
@@ -365,7 +344,7 @@ function updateSpeakerPreview() {
     }
 }
 
-document.getElementById("addSpeaker").addEventListener("click", () => {
+function addSpeakerOnClick() {
     let storded = localStorage.getItem(speakerStorageKey)
     let newSpeaker = {
         name: messagePreviewName.innerText,
@@ -394,24 +373,25 @@ document.getElementById("addSpeaker").addEventListener("click", () => {
     }
 
     updateSpeakerPreview()
-})
-
-scriptInput.value = localStorage.getItem(scriptStorageKey)
+}
 
 function updateScriptInput() {
-    localStorage.setItem(scriptStorageKey, scriptInput.value)
+    localStorage.setItem(scriptStorageKey, scriptInput.value);
 
-    let lines = scriptInput.value.split("\n").length;
-    lineNumbers.textContent = Array.from({ length: lines }, (_, i) => i + 1).join("\n");
+    const lines = scriptInput.value.split("\n").length;
+    if (previesLineCount === lines) return 
+
+    let html = "";
+    for (let i = 1; i <= lines; i++) {
+        html += `<span data-line="${i}">${i}</span>\n`;
+    }
+    lineNumbers.innerHTML = html;
+    previesLineCount = lines
 }
 
 scriptInput.addEventListener("scroll", () => {
     lineNumbers.scrollHeight = scriptInput.scrollHeight
 })
-
-updateScriptInput()
-
-updateSpeakerPreview()
 
 async function extract() {
     let speaker = localStorage.getItem(speakerStorageKey)
@@ -510,4 +490,25 @@ function updateTitleFromStorage() {
     updateTitleFromInput()
 }
 
-updateTitleFromStorage()
+function avaterInputOnChange() {
+    const file = avatarInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        const base64String = reader.result;
+        messagePreviewAvatar.src = base64String
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function main() {
+    scriptInput.value = localStorage.getItem(scriptStorageKey)
+
+    updateScriptInput()
+    updateSpeakerPreview()
+    updateTitleFromStorage()
+}
+
+main()
+
