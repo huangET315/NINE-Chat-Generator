@@ -15,6 +15,8 @@ Their is also a tutorial video at https://youtu.be/ELf5mXja6QA
 - [Knowing Issues](#Knowing_Issues)
 - [WIP](#WIP)
 - [Ideas](#Ideas)
+- [Version History](#Version_History)
+    - [V 1.1](#V_1.1)
 
 # Functions
 ## speak
@@ -66,9 +68,16 @@ Their is also a tutorial video at https://youtu.be/ELf5mXja6QA
 # Knowing Issues
 Issues I already know and will be fix soon
 - Can't pause / end when playing
+  
 # WIP
 Things I'm currently working on
 - Export as video
+  
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
 - Block programming like Scratch when creating animation (low)
+
+# Version History
+## V 1.1
+- Added setPOV function
+- Bug fix
