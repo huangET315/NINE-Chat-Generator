@@ -18,6 +18,7 @@ Their is also a tutorial video at https://youtu.be/ELf5mXja6QA
 - [Version History](#Version_History)
     - [V 1.1](#V_1.1)
     - [V 1.2](#V_1.2)
+    - [V 1.3](#V_1.3)
 
 # Functions
 ## speak
@@ -80,6 +81,12 @@ Ideas I have but have no ideas how to, followed by the chance they actually come
 - Function hint
 
 # Version History
+## V 1.3
+- Temporary abandon "Export as video" feature, that requrie a fully rebuild on the animation system
+- Added Jump To button
+    - Click on a line number to select / manually input
+    - Press Jump To, the animation will directly jump to that line and pause
+    - Jump while playing is not intended and might not function as you would expect
 ## V 1.2
 - Added Pause / Resume / Stop feature
 - Added code line display

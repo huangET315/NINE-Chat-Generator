@@ -9,6 +9,7 @@ let speakerEditPreview = document.getElementById("speakerEditPreview")
 let scriptInput = document.getElementById("scriptInput")
 let lineNumbers = document.getElementById("lineNumbers")
 let bannerAvatars = document.getElementById("userList").querySelectorAll(".userAvatar")
+let jumpToInput = document.getElementById("jumpToInput")
 
 let playStopButton = document.getElementById("play-stop")
 let pauseResumeButton = document.getElementById("pause-resume")
@@ -20,18 +21,17 @@ let isPlaying = false
 let isPausing = false
 
 let lineNum = -1
+let breakPoint = -1
 
-let previesLineCount = -1;
+let previesLineCount = 0;
 
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
 const bannerStorageKey = "banner"
 const settingVersion = "1.0"
 
-function sleep(s) {
-    if (s <= 0) {
-        return
-    }
+function sleep(s, skip = false) {
+    if (skip || s <= 0) return
     return new Promise(resolve => setTimeout(resolve, s*1000));
 }
 
@@ -78,9 +78,9 @@ function buildBubble(content) {
     return div
 }
 
-async function speak(id, name, avatar, content, typingTime, lineNum) {
+async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = false) {
     if (id === previesSpeaker) {
-        await sleep(0.2)
+        await sleep(0.2, skipWait)
     }
 
     if (typingTime > 0) {
@@ -90,7 +90,7 @@ async function speak(id, name, avatar, content, typingTime, lineNum) {
     let bubble = buildBubble(content);
 
     if (typingTime > 0) {
-        await sleep(typingTime)
+        await sleep(typingTime, skipWait)
         toggleTyping(name)
     }
 
@@ -143,7 +143,7 @@ function parseParams(str) {
     return JSON.parse(str)
 }
 
-async function resolveCodeLine(speaker, codeLine, lineNum) {
+async function resolveCodeLine(speaker, codeLine, lineNum, skipWait = false) {
     if (codeLine.length <= 0) {return}
     if (codeLine.trim().startsWith("//")) {return}
 
@@ -152,10 +152,10 @@ async function resolveCodeLine(speaker, codeLine, lineNum) {
 
     switch (funcName) {
         case "speak":
-            await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2], lineNum)
+            await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2], lineNum, skipWait)
             break
         case "wait":
-            await sleep(params[0])
+            await sleep(params[0], skipWait)
             break
         case "system":
             let shouldScroll = isScrolledToBottom(chatBox)
@@ -184,13 +184,13 @@ async function waitUntilUnPause() {
     return;
 }
 
-async function startAnimation(speaker, actions) {
+async function startAnimation(speaker, actions, skipWait = false, breakLine = -1) {
     chatBox.textContent = "";
     previesSpeaker = -1;
     previesContainer = '';
     pov = -1;
 
-    await sleep(1);
+    await sleep(1, skipWait);
 
     lineNum = 0
 
@@ -198,10 +198,15 @@ async function startAnimation(speaker, actions) {
         if (!isPlaying) {
             return;
         }
+        if (lineNum === breakLine) {
+            isPausing = true
+            pauseResumeButton.innerText = "Resume"
+            skipWait = false
+        }
         if (isPausing) {
             await waitUntilUnPause()
         }
-        await resolveCodeLine(speaker, codeLine, lineNum)
+        await resolveCodeLine(speaker, codeLine, lineNum, skipWait)
         lineNum ++
     }
 
@@ -209,7 +214,7 @@ async function startAnimation(speaker, actions) {
     end()
 }
 
-async function playOrStop() {
+async function playOrStop(skipWait = false, breakLine = -1) {
     switch (playStopButton.innerText) {
         case "Play":
             let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
@@ -223,7 +228,7 @@ async function playOrStop() {
             isPlaying = true
             isPausing = false
 
-            await startAnimation(speaker, script);
+            await startAnimation(speaker, script, skipWait, breakLine);
 
             playStopButton.innerText = "Play"
 
@@ -374,7 +379,7 @@ function addSpeakerOnClick() {
 
     updateSpeakerPreview()
 }
-
+/*
 function updateScriptInput() {
     localStorage.setItem(scriptStorageKey, scriptInput.value);
 
@@ -386,6 +391,30 @@ function updateScriptInput() {
         html += `<span data-line="${i}">${i}</span>\n`;
     }
     lineNumbers.innerHTML = html;
+    previesLineCount = lines
+}
+*/
+
+function updateScriptInput() {
+    localStorage.setItem(scriptStorageKey, scriptInput.value);
+
+    const lines = scriptInput.value.split("\n").length;
+    if (previesLineCount === lines) return 
+
+    if (lines - previesLineCount > 0) {
+        for (let i = previesLineCount + 1; i <= lines; i++) {
+            lineNumbers.innerHTML += `<span data-line="${i}" onclick="jumpToInput.value=${i};updateCodeLineHightlight()">${i}<br></span>`
+        }
+    } else {
+        for (let i = previesLineCount; i > lines; i--) {
+            lineNumbers.removeChild(lineNumbers.querySelector(`[data-line='${i}']`))
+        }
+    }
+
+    jumpToInput.max = lines
+    if (jumpToInput.value > lines) {
+        jumpToInput.value = 0
+    }
     previesLineCount = lines
 }
 
@@ -500,6 +529,28 @@ function avaterInputOnChange() {
     };
 
     reader.readAsDataURL(file);
+}
+
+function updateCodeLineHightlight() {
+    let target = jumpToInput.value
+
+    for (let span of lineNumbers.querySelectorAll("span")) {
+        if (span.dataset.line === target) {
+            span.classList.add("selected")
+        } else {
+            span.classList.remove("selected")
+        }
+    }
+}
+
+function jumpTo() {
+    let breakLine = Number(jumpToInput.value)
+    if (breakLine <= 0) {
+        playOrStop()
+    } else {
+        playOrStop(true, breakLine)
+    }
+    
 }
 
 function main() {

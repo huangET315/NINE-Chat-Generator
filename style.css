@@ -287,13 +287,22 @@ body {
 #lineNumbers {
     background-color: #f0f0f0;
     color: #888;
-    padding: 5px;
+    padding-top: 5px;
     text-align: right;
     user-select: none;
     line-height: 1.5;
     white-space: pre;
     overflow: hidden;
     font-size: 14px;
+}
+
+#lineNumbers span{
+    padding: 5px;
+}
+
+#lineNumbers span.selected {
+    background-color: green;
+    color: white;
 }
 
 textarea {
@@ -360,3 +369,7 @@ textarea {
     border-bottom: 2px solid black;
 }
 
+#jumpToInput {
+    display: inline-block;
+    width: fit-content;
+}
