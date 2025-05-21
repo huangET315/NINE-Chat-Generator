@@ -252,6 +252,7 @@ async function playOrStop(skipWait = false, breakLine = -1) {
         case "Play":
             let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
             let script = scriptInput.value
+                .replace(/[\u2018\u2019\u201B\u201C\u201D\u00AB\u00BB]/g, '"')
 
             playStopButton.innerText = "Stop"
 
