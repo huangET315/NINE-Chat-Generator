@@ -497,7 +497,7 @@ function updateScriptInput() {
 
     if (lines - previesLineCount > 0) {
         for (let i = previesLineCount + 1; i <= lines; i++) {
-            lineNumbers.innerHTML += `<span data-line="${i}" onclick="jumpToInput.value=${i};updateCodeLineHightlight()">${i}<br></span>`
+            lineNumbers.innerHTML += `<span data-line="${i}" onclick="updateCodeLineHightlight(${i})">${i}<br></span>`
         }
     } else {
         for (let i = previesLineCount; i > lines; i--) {
@@ -692,8 +692,17 @@ function emoteInputOnChange() {
     reader.readAsDataURL(file);
 }
 
-function updateCodeLineHightlight() {
-    let target = jumpToInput.value
+function updateCodeLineHightlight(target = null) {
+    if (!target && target != "0") {
+        target = jumpToInput.value
+    } else {
+        target = String(target)
+        if (target === jumpToInput.value) {
+            jumpToInput.value = "0"
+            target = "0"
+        }
+        jumpToInput.value = target
+    }
 
     for (let span of lineNumbers.querySelectorAll("span")) {
         if (span.dataset.line === target) {
