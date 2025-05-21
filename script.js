@@ -425,7 +425,6 @@ function updateScriptInput() {
     let lineContent = scriptInput.value.split("\n")[getCursorLine()-1]
     let funcName = lineContent.slice(0, lineContent.indexOf("("))
     let hint = hints[funcName]
-    console.log(funcName)
     if (hint) {
         hintBox.innerText = hint
     } else {
