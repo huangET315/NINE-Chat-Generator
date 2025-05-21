@@ -7,7 +7,7 @@ Current version: 1.3
 Current script version: 1.0  
 Script version only change when their is a syntax change for an already-exist function, I will try my best prevent that from happening
 
-- [Knowing Issues](#Knowing-Issue)
+- [Knowing Issues](#Knowing-Issues)
 - [WIP](#WIP)
 - [Ideas](#Ideas)
 
