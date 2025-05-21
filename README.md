@@ -20,6 +20,10 @@ Issues I already know and will be fix soon
   
 # WIP
 Things I'm currently working on
+- UI improvment
+  -  Smaller stuff like padding and margin
+  -  Bigger things like function hint
+  -  Perhaps call them command?
   
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
