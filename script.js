@@ -12,6 +12,7 @@ let bannerAvatars = document.getElementById("userList").querySelectorAll(".userA
 let jumpToInput = document.getElementById("jumpToInput")
 let hintBox = document.getElementById("hintBox")
 let emoteInput = document.getElementById("addEmote")
+let emotesPreview = document.getElementById("emotesPreview")
 
 let playStopButton = document.getElementById("play-stop")
 let pauseResumeButton = document.getElementById("pause-resume")
@@ -53,7 +54,12 @@ const hints = {
     "wait":
     `wait(seconds):
     Wait a few second before next line of script
-    wait(1.5)`
+    wait(1.5)`,
+
+    "emote":
+    `emote(speakerIndex, emoteIndex):
+    Let a speaker send an emote
+    emote(1, 0)`
 };
 
 function main() {
@@ -62,6 +68,7 @@ function main() {
     updateScriptInput()
     updateSpeakerPreview()
     updateTitleFromStorage()
+    updateEmotesPreview()
 }
 
 main()
@@ -168,6 +175,54 @@ async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = 
     }   
 }
 
+async function speakEmote(id, name, avatar, emote, lineNum, skipWait = false) {
+    if (id === previesSpeaker) {
+        await sleep(0.2, skipWait)
+    }
+
+    let emoteImg = document.createElement("img")
+    emoteImg.classList.add("emote")
+    emoteImg.src = emote
+
+    let shouldScroll = isScrolledToBottom(chatBox)
+
+    if (id != previesSpeaker) {
+        let message = document.createElement("div")
+        message.classList.add("message")
+        message.dataset.createdBy = lineNum
+        chatBox.appendChild(message)
+        
+        let img = document.createElement("img")
+        img.classList.add("avatar")
+        img.src = avatar
+        message.appendChild(img)
+
+        let container = document.createElement("div")
+        container.classList.add("container")
+        message.appendChild(container)
+
+        let userName = document.createElement("div")
+        userName.classList.add("userName")
+        userName.innerText = name
+        container.appendChild(userName)
+
+        previesContainer = container
+        previesSpeaker = id
+
+        if (id === pov) {
+            message.classList.add("self-message")
+
+            message.insertBefore(container, img);
+        }
+    }
+
+    previesContainer.appendChild(emoteImg)
+
+    if (shouldScroll) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }   
+}
+
 function parseParams(str) {
     str = str.trim()
     if (str.startsWith('(') && str.endsWith(')')) {
@@ -178,7 +233,7 @@ function parseParams(str) {
     return JSON.parse(str)
 }
 
-async function resolveCodeLine(speaker, codeLine, lineNum, skipWait = false) {
+async function resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait = false) {
     if (codeLine.length <= 0) {return}
     if (codeLine.trim().startsWith("//")) {return}
 
@@ -189,6 +244,8 @@ async function resolveCodeLine(speaker, codeLine, lineNum, skipWait = false) {
         case "speak":
             await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2], lineNum, skipWait)
             break
+        case "emote":
+            await speakEmote(params[0], speaker[params[0]].name, speaker[params[0]].avatar, emotes[params[1]])
         case "wait":
             await sleep(params[0], skipWait)
             break
@@ -219,7 +276,7 @@ async function waitUntilUnPause() {
     return;
 }
 
-async function startAnimation(speaker, actions, skipWait = false, breakLine = -1) {
+async function startAnimation(speaker, emotes, actions, skipWait = false, breakLine = -1) {
     chatBox.textContent = "";
     previesSpeaker = -1;
     previesContainer = '';
@@ -227,7 +284,7 @@ async function startAnimation(speaker, actions, skipWait = false, breakLine = -1
 
     await sleep(1, skipWait);
 
-    lineNum = 0
+    lineNum = 1
 
     for (let codeLine of actions.split("\n")) {
         if (!isPlaying) {
@@ -241,7 +298,7 @@ async function startAnimation(speaker, actions, skipWait = false, breakLine = -1
         if (isPausing) {
             await waitUntilUnPause()
         }
-        await resolveCodeLine(speaker, codeLine, lineNum, skipWait)
+        await resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait)
         lineNum ++
     }
 
@@ -255,6 +312,7 @@ async function playOrStop(skipWait = false, breakLine = -1) {
             let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
             let script = scriptInput.value
                 .replace(/[\u2018\u2019\u201B\u201C\u201D\u00AB\u00BB]/g, '"')
+            let emotes = JSON.parse(localStorage.getItem(emotesStorageKey))
 
             playStopButton.innerText = "Stop"
 
@@ -264,7 +322,7 @@ async function playOrStop(skipWait = false, breakLine = -1) {
             isPlaying = true
             isPausing = false
 
-            await startAnimation(speaker, script, skipWait, breakLine);
+            await startAnimation(speaker, emotes, script, skipWait, breakLine);
 
             playStopButton.innerText = "Play"
 
@@ -567,11 +625,54 @@ function avatarInputOnChange() {
     reader.readAsDataURL(file);
 }
 
-function updateEmotePreview() {
+function deleteEmote(index) {
+    let storded = JSON.parse(localStorage.getItem(emotesStorageKey))
+
+    storded.splice(index, 1);
+
+    localStorage.setItem(emotesStorageKey, JSON.stringify(storded))
+
+    updateEmotesPreview()
+}
+
+function buildEmotesPreviewTr(index, base64Url) {
+    let tr = document.createElement("tr");
+
+    let tdIndex = document.createElement("td");
+    tdIndex.textContent = index;
+
+    let tdImg = document.createElement("td");
+    let img = document.createElement("img");
+    img.className = "emote";
+    img.style.width = "75px";
+    img.style.height = "75px";
+    img.src = base64Url;
+    tdImg.appendChild(img);
+
+    let tdDelete = document.createElement("td");
+    let deleteButton = document.createElement("button");
+    deleteButton.textContent = "X";
+    deleteButton.addEventListener("click", () => {
+        deleteEmote(index);
+    });
+    tdDelete.appendChild(deleteButton);
+
+    tr.appendChild(tdIndex);
+    tr.appendChild(tdImg);
+    tr.appendChild(tdDelete);
+
+    return tr;
+}
+
+function updateEmotesPreview() {
     let emotes = localStorage.getItem(emotesStorageKey)
-    emotes = JSON.parse()
-    for (let e of emotes) {
-        
+    emotesPreview.innerHTML = "<tr><th>Index</th><th>Emote</th><th>Delete</th></tr>"
+
+    if (!emotes) {return}
+    emotes = JSON.parse(emotes)
+    
+    for (let i = 0; i < emotes.length; i++) {
+        emotesPreview.appendChild(buildEmotesPreviewTr(i, emotes[i]))
     }
 }
 
@@ -583,8 +684,8 @@ function emoteInputOnChange() {
         let emotes = localStorage.getItem(emotesStorageKey) || '[]'
         emotes = JSON.parse(emotes)
         emotes.push(reader.result)
-        localStorage.setItem(emotesStorageKey, JSON.stringify(emotesStorageKey))
-        updateEmotePreview()
+        localStorage.setItem(emotesStorageKey, JSON.stringify(emotes))
+        updateEmotesPreview()
         emoteInput.value = ""
     }
 

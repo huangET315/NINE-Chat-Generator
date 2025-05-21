@@ -61,15 +61,17 @@
                 <button id="addSpeaker" type="button" onclick="addSpeakerOnClick()">Add Speaker</button>
             </form>
             <div style="height: 200px; overflow-y: scroll; border: 1px black solid;">
-                <table id="speakerEditPreview">
+                <table id="speakerEditPreview" class="previewTable">
                 </table>
             </div>
-            <div style="height:200px; border: 1px black solid;">
+            <div>
                 <div style="border: 1px black solid;">
                     <label for="addEmote">Add Emote: </label>
-                    <input id="addEmote" onchange="addEmoteOnChange()" type="file" accept="image/png, image/jpeg">
+                    <input id="addEmote" onchange="emoteInputOnChange()" type="file" accept="image/png, image/jpeg">
                 </div>
-                <table id="emodePreview"></table>
+                <div style="height: 250px; overflow-y: scroll; border: 1px black solid;">
+                    <table id="emotesPreview" class="previewTable"></table>
+                </div>
             </div>
         </div>
         <div style="max-width: 400px;">

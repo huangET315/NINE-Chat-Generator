@@ -328,43 +328,17 @@ textarea {
     overflow: auto;
 }
 
-.popup-bg {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(128, 128, 128, 0.5);
-    height: 100%;
-    width: 100%;
-    z-index: 2;
-    display: none;
-}
-
-.popup-content {
-    position: fixed;
-    display: flex;
-    justify-content: space-between;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 80%;
-    width: 80%;
-    background-color: white;
-    padding: 20px;
-    overflow: auto;
-}
-
 #speakerEditForm {
     border: 1px black solid;
     padding: 3px;
 }
 
-#speakerEditPreview {   
+.previewTable {   
     width: 100%;
     border-collapse: collapse;
 }
 
-#speakerEditPreview th, td {
+.previewTable th, td {
     border: 1px solid black;
     border-bottom: 2px solid black;
 }
@@ -378,4 +352,15 @@ textarea {
     border: 1px solid black;
     padding: 5px;
     color: #0103ff;
+}
+
+.emote {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    animation: fadeIn 0.4s ease;
+}
+
+.self-message .emote {
+    float: right;
 }
