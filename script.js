@@ -30,6 +30,16 @@ const scriptStorageKey = "script"
 const bannerStorageKey = "banner"
 const settingVersion = "1.0"
 
+function main() {
+    scriptInput.value = localStorage.getItem(scriptStorageKey)
+
+    updateScriptInput()
+    updateSpeakerPreview()
+    updateTitleFromStorage()
+}
+
+main()
+
 function sleep(s, skip = false) {
     if (skip || s <= 0) return
     return new Promise(resolve => setTimeout(resolve, s*1000));
@@ -85,14 +95,13 @@ async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = 
 
     if (typingTime > 0) {
         toggleTyping(name)
-    }
-
-    let bubble = buildBubble(content);
-
-    if (typingTime > 0) {
         await sleep(typingTime, skipWait)
         toggleTyping(name)
     }
+
+    if (content === "") {return}
+
+    let bubble = buildBubble(content);
 
     let shouldScroll = isScrolledToBottom(chatBox)
 
@@ -552,14 +561,3 @@ function jumpTo() {
     }
     
 }
-
-function main() {
-    scriptInput.value = localStorage.getItem(scriptStorageKey)
-
-    updateScriptInput()
-    updateSpeakerPreview()
-    updateTitleFromStorage()
-}
-
-main()
-
