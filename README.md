@@ -3,6 +3,8 @@ Generate NINE Chat similar to the game Tribe Nine at https://huanget315.github.i
 
 See more details in the [Wiki](https://github.com/huangET315/NINE-Chat-Generator/wiki) page
 
+WARNING: Currently the tutorial video have a mistake: for a string parament, you have to use double quotation marks not single quotation marks, so "this" will work but 'this' will not, if you want to include double quotation marks in the string, put a backslash (\) before it, for an example: "this is how you include a \" in your string"
+
 Current version: 1.3  
 Current script version: 1.0  
 Script version only change when their is a syntax change for an already-exist function, I will try my best prevent that from happening
