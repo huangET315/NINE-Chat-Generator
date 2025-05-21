@@ -373,3 +373,9 @@ textarea {
     display: inline-block;
     width: fit-content;
 }
+
+#hintBox {
+    border: 1px solid black;
+    padding: 5px;
+    color: #0103ff;
+}

@@ -10,12 +10,14 @@ let scriptInput = document.getElementById("scriptInput")
 let lineNumbers = document.getElementById("lineNumbers")
 let bannerAvatars = document.getElementById("userList").querySelectorAll(".userAvatar")
 let jumpToInput = document.getElementById("jumpToInput")
+let hintBox = document.getElementById("hintBox")
 
 let playStopButton = document.getElementById("play-stop")
 let pauseResumeButton = document.getElementById("pause-resume")
 
 let previesSpeaker = -1;
 let previesContainer = '';
+let previesCursorLine = -1;
 let pov = -1
 let isPlaying = false
 let isPausing = false
@@ -29,6 +31,28 @@ const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
 const bannerStorageKey = "banner"
 const settingVersion = "1.0"
+
+const hints = {
+    "speak": 
+    `speak(speakerIndex, content, typingSeconds):
+    Let a speaker say something
+    speak(0, "Hello", 1)`,
+
+    "system": 
+    `system(content):
+    Show a system message in chat
+    system('"NEON" added "NEON" into "Casual Chat"')`,
+
+    "setPOV":
+    `setPOV(speakerIndex):
+    Set a speaker as POV in this chat
+    setPOV(2)`,
+
+    "wait":
+    `wait(seconds):
+    Wait a few second before next line of script
+    wait(1.5)`
+};
 
 function main() {
     scriptInput.value = localStorage.getItem(scriptStorageKey)
@@ -388,24 +412,25 @@ function addSpeakerOnClick() {
 
     updateSpeakerPreview()
 }
-/*
-function updateScriptInput() {
-    localStorage.setItem(scriptStorageKey, scriptInput.value);
 
-    const lines = scriptInput.value.split("\n").length;
-    if (previesLineCount === lines) return 
-
-    let html = "";
-    for (let i = 1; i <= lines; i++) {
-        html += `<span data-line="${i}">${i}</span>\n`;
-    }
-    lineNumbers.innerHTML = html;
-    previesLineCount = lines
+function getCursorLine() {
+    const pos = scriptInput.selectionStart;
+    const textBeforeCursor = scriptInput.value.substring(0, pos);
+    return textBeforeCursor.split('\n').length;
 }
-*/
 
 function updateScriptInput() {
     localStorage.setItem(scriptStorageKey, scriptInput.value);
+
+    let lineContent = scriptInput.value.split("\n")[getCursorLine()-1]
+    let funcName = lineContent.slice(0, lineContent.indexOf("("))
+    let hint = hints[funcName]
+    console.log(funcName)
+    if (hint) {
+        hintBox.innerText = hint
+    } else {
+        hintBox.innerText = ""
+    }
 
     const lines = scriptInput.value.split("\n").length;
     if (previesLineCount === lines) return 
