@@ -50,7 +50,7 @@
                 <input id="speakerEditForm-name" oninput="messagePreviewName.innerText = nameInput.value" autocomplete="off">
                 <br>
                 <label for="speakerEditForm-avatar">Avatar: </label>
-                <input id="speakerEditForm-avatar" type="file" accept="image/png, image/jpeg">
+                <input id="speakerEditForm-avatar" onchange="avaterInputOnChange()" type="file" accept="image/png, image/jpeg">
                 <br>
                 <div id="messagePreview" class="message">
                     <img id="messagePreview-avatar" class="avatar" src="assets/ph2.png">
