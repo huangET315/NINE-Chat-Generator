@@ -17,6 +17,7 @@ Script version only change when their is a syntax change for an already-exist fu
 
 # Knowing Issues
 Issues I already know and will be fix soon
+- Extract & Load not include emotes
   
 # WIP
 Things I'm currently working on
