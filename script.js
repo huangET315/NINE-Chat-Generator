@@ -11,6 +11,7 @@ let lineNumbers = document.getElementById("lineNumbers")
 let bannerAvatars = document.getElementById("userList").querySelectorAll(".userAvatar")
 let jumpToInput = document.getElementById("jumpToInput")
 let hintBox = document.getElementById("hintBox")
+let emoteInput = document.getElementById("addEmote")
 
 let playStopButton = document.getElementById("play-stop")
 let pauseResumeButton = document.getElementById("pause-resume")
@@ -30,6 +31,7 @@ let previesLineCount = 0;
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
 const bannerStorageKey = "banner"
+const emotesStorageKey = "emotes"
 const settingVersion = "1.0"
 
 const hints = {
@@ -553,7 +555,7 @@ function updateTitleFromStorage() {
     updateTitleFromInput()
 }
 
-function avaterInputOnChange() {
+function avatarInputOnChange() {
     const file = avatarInput.files[0];
     const reader = new FileReader();
 
@@ -561,6 +563,30 @@ function avaterInputOnChange() {
         const base64String = reader.result;
         messagePreviewAvatar.src = base64String
     };
+
+    reader.readAsDataURL(file);
+}
+
+function updateEmotePreview() {
+    let emotes = localStorage.getItem(emotesStorageKey)
+    emotes = JSON.parse()
+    for (let e of emotes) {
+        
+    }
+}
+
+function emoteInputOnChange() {
+    const file = emoteInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        let emotes = localStorage.getItem(emotesStorageKey) || '[]'
+        emotes = JSON.parse(emotes)
+        emotes.push(reader.result)
+        localStorage.setItem(emotesStorageKey, JSON.stringify(emotesStorageKey))
+        updateEmotePreview()
+        emoteInput.value = ""
+    }
 
     reader.readAsDataURL(file);
 }

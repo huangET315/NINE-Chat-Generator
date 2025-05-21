@@ -50,7 +50,7 @@
                 <input id="speakerEditForm-name" oninput="messagePreviewName.innerText = nameInput.value" autocomplete="off">
                 <br>
                 <label for="speakerEditForm-avatar">Avatar: </label>
-                <input id="speakerEditForm-avatar" onchange="avaterInputOnChange()" type="file" accept="image/png, image/jpeg">
+                <input id="speakerEditForm-avatar" onchange="avatarInputOnChange()" type="file" accept="image/png, image/jpeg">
                 <br>
                 <div id="messagePreview" class="message">
                     <img id="messagePreview-avatar" class="avatar" src="assets/ph2.png">
@@ -60,9 +60,16 @@
                 </div>
                 <button id="addSpeaker" type="button" onclick="addSpeakerOnClick()">Add Speaker</button>
             </form>
-            <div style="height: 400px; overflow-y: scroll; border: 1px black solid;">
+            <div style="height: 200px; overflow-y: scroll; border: 1px black solid;">
                 <table id="speakerEditPreview">
                 </table>
+            </div>
+            <div style="height:200px; border: 1px black solid;">
+                <div style="border: 1px black solid;">
+                    <label for="addEmote">Add Emote: </label>
+                    <input id="addEmote" onchange="addEmoteOnChange()" type="file" accept="image/png, image/jpeg">
+                </div>
+                <table id="emodePreview"></table>
             </div>
         </div>
         <div style="max-width: 400px;">
@@ -72,7 +79,7 @@
                 <textarea id="scriptInput" cols="50" oninput="updateScriptInput()"></textarea>
             </div>
         </divd>
-        <script src="script.js"></script>
+        <script src="script.js?v=140521052025"></script>
     </div>
 </body>
 </html>
