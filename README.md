@@ -20,8 +20,6 @@ Issues I already know and will be fix soon
   
 # WIP
 Things I'm currently working on
-- Emotes
-- Function hint
   
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
