@@ -3,9 +3,9 @@ Generate NINE Chat similar to the game Tribe Nine at https://huanget315.github.i
 
 See more details in the [Wiki](https://github.com/huangET315/NINE-Chat-Generator/wiki) page
 
-WARNING: Currently the tutorial video have a mistake: for a string parament, you have to use double quotation marks not single quotation marks, so "this" will work but 'this' will not, if you want to include double quotation marks in the string, put a backslash (\) before it, for an example: "this is how you include a \" in your string"
+WARNING: Currently the tutorial video have a mistake: for a string parament, you have to use double quotation marks not single quotation marks, so "this" will work but 'this' will not, if you want to include double quotation marks in the string, put a backslash (\\) before it, for an example: "this is how you include a \\" in your string"
 
-Current version: 1.3  
+Current version: 1.6 (For version history see [Version History](https://github.com/huangET315/NINE-Chat-Generator/wiki/Version_History))
 Current script version: 1.0  
 Script version only change when their is a syntax change for an already-exist function, I will try my best prevent that from happening
 
@@ -17,14 +17,10 @@ Script version only change when their is a syntax change for an already-exist fu
 
 # Knowing Issues
 Issues I already know and will be fix soon
-- Extract & Load not include emotes
+- In script section, if one line is too long that it trigger automatic wrap, the code line display will not show line numbers correctly (hard)
   
 # WIP
 Things I'm currently working on
-- UI improvment
-  -  Smaller stuff like padding and margin
-  -  Bigger things like function hint
-  -  Perhaps call them command?
   
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
