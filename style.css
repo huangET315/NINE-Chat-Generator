@@ -177,13 +177,14 @@ body {
     display: block;
     width: fit-content;
     animation: fadeIn 0.4s ease;
+    filter: drop-shadow(1px 1px rgba(0, 0, 0, 0.3))
 }
 
 .bubble::after {
     content: "";
     position: absolute;
     top: 5px;
-    left: -11px;
+    left: -8px;
     width: 0;
     height: 0;
     border: 10px solid transparent;
@@ -295,7 +296,6 @@ body {
     background-color: #f0f0f0;
     color: #888;
     padding-top: 5px;
-    text-align: right;
     user-select: none;
     line-height: 1.5;
     white-space: pre;
@@ -304,7 +304,8 @@ body {
 }
 
 #lineNumbers span{
-    padding: 5px;
+    padding: 0px 5px;
+    display: block;
 }
 
 #lineNumbers span.selected {
@@ -328,7 +329,7 @@ textarea {
     padding: 5px;
     border: none;
     resize: none;
-    font-family: inherit;
+    font-family: monospace;
     font-size: 14px;
     line-height: 1.5;
     outline: none;

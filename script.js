@@ -27,7 +27,9 @@ let isPausing = false
 let lineNum = -1
 let breakPoint = -1
 
-let previesLineCount = 0;
+let previousLineCount = 1;
+
+const scriptInputCharsPerLine = getScriptInputCharsPerLine()
 
 const speakerStorageKey = "speakers"
 const scriptStorageKey = "script"
@@ -118,6 +120,29 @@ const commandList = {
     
 };
 
+function getScriptInputCharsPerLine() {
+    const style = getComputedStyle(scriptInput);
+    const char = document.createElement('span');
+    char.textContent = 'A';
+    char.style.visibility = 'hidden';
+    char.style.position = 'absolute';
+    char.style.whiteSpace = 'pre';
+    char.style.font = style.font;
+    document.body.appendChild(char);
+
+    const charWidth = char.getBoundingClientRect().width;
+    document.body.removeChild(char);
+
+    const paddingLeft = parseFloat(style.paddingLeft);
+    const paddingRight = parseFloat(style.paddingRight);
+    const innerWidth = scriptInput.clientWidth - paddingLeft - paddingRight;
+
+    console.log(innerWidth)
+    console.log(charWidth)
+
+    return Math.floor(innerWidth / charWidth);
+}
+
 main()
 
 async function main() {
@@ -128,13 +153,17 @@ async function main() {
             if (e.target != ele) return
             ele.classList.toggle("hidden")
         })
-    }
+    }   
 
     updateScriptInput()
     updateSpeakerPreview()
     updateTitleFromStorage()
     updateEmotesPreview()
     buildCommandList()
+
+    window.addEventListener("beforeunload", () => {
+        localStorage.setItem(scriptStorageKey, scriptInput.value);
+    })
 }
 
 function buildCommandContainerDiv(commandName, command) {
@@ -619,23 +648,52 @@ function addSpeakerOnClick() {
     updateSpeakerPreview()
 }
 
-function updateScriptInput() {
+function getCursorLine() {
+    const pos = scriptInput.selectionStart;
+    const textBeforeCursor = scriptInput.value.substring(0, pos);
+    return textBeforeCursor.split('\n').length;
+}
+
+function scriptInputOnChange() {
     localStorage.setItem(scriptStorageKey, scriptInput.value);
+}
 
-    const lines = scriptInput.value.split("\n").length;
-    if (previesLineCount === lines) return 
+function updateScriptInput() {
+    const linesArray = scriptInput.value.split("\n");
+    const lines = linesArray.length;
 
-    if (lines - previesLineCount > 0) {
-        for (let i = previesLineCount + 1; i <= lines; i++) {
-            lineNumbers.innerHTML += `<span data-line="${i}" onclick="updateCodeLineHightlight(${i})">${i}<br></span>`
-        }
-    } else {
-        for (let i = previesLineCount; i > lines; i--) {
-            lineNumbers.removeChild(lineNumbers.querySelector(`[data-line='${i}']`))
+    if (previousLineCount != lines) {
+        if (lines - previousLineCount > 0) {
+            for (let i = previousLineCount + 1; i <= lines; i++) {
+                lineNumbers.innerHTML += `<span data-line="${i}" onclick="updateCodeLineHightlight(${i})">${i}<br></span>`
+            }
+        } else {
+            for (let i = previousLineCount; i > lines; i--) {
+                lineNumbers.removeChild(lineNumbers.querySelector(`[data-line='${i}']`))
+            }
         }
     }
 
-    previesLineCount = lines
+    const spans = lineNumbers.querySelectorAll("span");
+    spans.forEach((span, index) => {
+        const textLine = linesArray[index] || "";
+        const requiredBrCount = Math.max(0, Math.ceil(textLine.length / scriptInputCharsPerLine) - 1);
+
+        const currentBrCount = span.querySelectorAll("br").length;
+
+        if (currentBrCount < requiredBrCount + 1) {
+            for (let i = 0; i < requiredBrCount + 1 - currentBrCount; i++) {
+                span.appendChild(document.createElement("br"));
+            }
+        } else if (currentBrCount > requiredBrCount + 1) {
+            const brs = span.querySelectorAll("br");
+            for (let i = brs.length - 1; i >= requiredBrCount + 1; i--) {
+                brs[i].remove();
+            }
+        }
+    });
+
+    previousLineCount = lines
 }
 
 scriptInput.addEventListener("scroll", () => {
@@ -857,3 +915,4 @@ function jumpTo() {
         playOrStop(true, breakLine)
     }
 }
+

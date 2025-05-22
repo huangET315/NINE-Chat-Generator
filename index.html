@@ -79,8 +79,8 @@
         <div id="commandList"><h3>Commands</h3></div>
         <div style="max-width: 300px;">
             <div id="scriptWrapper">
-                <div id="lineNumbers"></div>
-                <textarea id="scriptInput" cols="50" oninput="updateScriptInput()"></textarea>
+                <div id="lineNumbers"><span data-line="1" onclick="updateCodeLineHightlight(1)">1<br></div>
+                <textarea id="scriptInput" cols="50" oninput="updateScriptInput()" onchange="scriptInputOnChange()"></textarea>
             </div>
         </divd>
         <script src="script.js?v=163922052025"></script>
