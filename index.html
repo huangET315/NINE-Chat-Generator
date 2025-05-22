@@ -33,21 +33,21 @@
             </div>
             <button id="play-stop" onclick="playOrStop()">Play</button>
             <button id="pause-resume" onclick="pauseOrResume()" style="display: none;">Pause</button>
-            <button id="jumpTo" onclick="jumpTo()">Jump To</button><input id="jumpToInput" oninput="updateCodeLineHightlight()" type="number" min="0" value="0">
+            <button id="jumpTo" onclick="jumpTo()" data-target="0">Jump To</button>
             <button id="extract" onclick="extract()">Extract</button>
             <button id="load" onclick="load()">Load</button>
             <button onclick="window.open('https://github.com/huangET315/NINE-Chat-Generator')">Github</button>
         </div>
 
-        <div>
-            <div style="border: 1px black solid;">
+        <div style="width: 250px;">
+            <div style="border: 1px black solid; padding: 5px;">
                 <label for="bannerEdit-title">Title: </label>
                 <input id="bannerEdit-title" oninput="updateTitleFromInput()" value="Title">
                 <br>
                 <label for="bannerEdit-subtitle">Subtitle: </label>
                 <input id="bannerEdit-subtitle" oninput="updateTitleFromInput()" value="Subtitle">
             </div>
-            <form id="speakerEditForm">
+            <form id="speakerEditForm" style="padding: 5px;">
                 <label for="speakerEditForm-name">Name: </label>
                 <input id="speakerEditForm-name" oninput="messagePreviewName.innerText = nameInput.value" autocomplete="off">
                 <br>
@@ -67,7 +67,7 @@
                 </table>
             </div>
             <div>
-                <div style="border: 1px black solid;">
+                <div style="border: 1px black solid; padding: 5px;">
                     <label for="addEmote">Add Emote: </label>
                     <input id="addEmote" onchange="emoteInputOnChange()" type="file" accept="image/png, image/jpeg">
                 </div>
@@ -76,8 +76,8 @@
                 </div>
             </div>
         </div>
-        <div style="max-width: 400px;">
-            <div id="hintBox"></div>
+        <div id="commandList"><h3>Commands</h3></div>
+        <div style="max-width: 300px;">
             <div id="scriptWrapper">
                 <div id="lineNumbers"></div>
                 <textarea id="scriptInput" cols="50" oninput="updateScriptInput()"></textarea>

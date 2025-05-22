@@ -9,13 +9,13 @@ let speakerEditPreview = document.getElementById("speakerEditPreview")
 let scriptInput = document.getElementById("scriptInput")
 let lineNumbers = document.getElementById("lineNumbers")
 let bannerAvatars = document.getElementById("userList").querySelectorAll(".userAvatar")
-let jumpToInput = document.getElementById("jumpToInput")
-let hintBox = document.getElementById("hintBox")
 let emoteInput = document.getElementById("addEmote")
 let emotesPreview = document.getElementById("emotesPreview")
+let commandListDiv = document.getElementById("commandList")
 
 let playStopButton = document.getElementById("play-stop")
 let pauseResumeButton = document.getElementById("pause-resume")
+let jumpToButton = document.getElementById("jumpTo")
 
 let previesSpeaker = -1;
 let previesContainer = '';
@@ -35,43 +35,188 @@ const bannerStorageKey = "banner"
 const emotesStorageKey = "emotes"
 const settingVersion = "1.0"
 
-const hints = {
-    "speak": 
-    `speak(speakerIndex, content, typingSeconds):
-    Let a speaker say something
-    speak(0, "Hello", 1)`,
-
-    "system": 
-    `system(content):
-    Show a system message in chat
-    system('"NEON" added "NEON" into "Casual Chat"')`,
-
-    "setPOV":
-    `setPOV(speakerIndex):
-    Set a speaker as POV in this chat
-    setPOV(2)`,
-
-    "wait":
-    `wait(seconds):
-    Wait a few second before next line of script
-    wait(1.5)`,
-
-    "emote":
-    `emote(speakerIndex, emoteIndex):
-    Let a speaker send an emote
-    emote(1, 0)`
+const commandList = {
+    "Categories": [
+        "Message",
+        "Setting",
+        "Control"
+    ],
+    "Commands": {
+        "speak": {
+            "category": "Message",
+            "description": "Let a speaker send a text message",
+            "paraments": {
+                "speakerIndex": {
+                    "type": "integer",
+                    "description": "Index of the speaker",
+                    "example": 0
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Text the speaker are going to send",
+                    "example": "Hello :D"
+                },
+                "typingSeconds": {
+                    "type": "number",
+                    "description": "Time took the speaker to type the content",
+                    "example": 1
+                }
+            },
+            "notes": "If <code>content</code> is an empty string, the speaker will type but not send the message<br>If <code>typingSeconds</code> is 0, the speaker will not type but directly send the message<br>If two message were send by a same speaker in a row, their will be a default 0.2 seconds wait time"
+        },
+        "emote": {
+            "category": "Message",
+            "description": "Let a speaker send a emote / image",
+            "paraments": {
+                "speakerIndex": {
+                    "type": "integer",
+                    "description": "Index of the speaker",
+                    "example": 0
+                },
+                "emoteIndex": {
+                    "type": "integer",
+                    "description": "Index of the emote",
+                    "example": 0
+                }
+            }
+        },
+        "system": {
+            "category": "Message",
+            "description": "Send a system message",
+            "paraments": {
+                "content": {
+                    "type": "string",
+                    "description": "Text content of the message",
+                    "example": "\"Zero\" has left the chat"
+                }
+            }
+        },
+        "wait": {
+            "category": "Control",
+            "description": "Wait for a specific amount of time before moving to the next command",
+            "paraments": {
+                "seconds": {
+                    "type": "number",
+                    "description": "Time to wait in second",
+                    "example": 1.5
+                }
+            }
+        },
+        "setPOV": {
+            "category": "Setting",
+            "description": "Set a speaker as POV of this chat, allowing their message to popup from right",
+            "paraments": {
+                "speakerIndex": {
+                    "type": "integer",
+                    "description": "Index of the speaker",
+                    "example": 0
+                }
+            },
+            "notes": "This command is ment to be used only once before the first message"
+        }
+    }
+    
 };
 
-function main() {
+main()
+
+async function main() {
     scriptInput.value = localStorage.getItem(scriptStorageKey)
+    
+    for (let ele of document.querySelectorAll('.popup-bg')) {
+        ele.addEventListener("click", (e) => {
+            if (e.target != ele) return
+            ele.classList.toggle("hidden")
+        })
+    }
 
     updateScriptInput()
     updateSpeakerPreview()
     updateTitleFromStorage()
     updateEmotesPreview()
+    buildCommandList()
 }
 
-main()
+function buildCommandContainerDiv(commandName, command) {
+    let div = document.createElement("div")
+
+    let syntax = commandName + "("
+    let example = commandName + "("
+    let table = document.createElement("table")
+    table.style.borderCollapse = "collapse";
+    table.classList.add("paramentTable")
+
+    let tbody = document.createElement("tbody")
+    tbody.innerHTML = "<tr><th>Parament</th><th>Type</th><th>Description</th></tr>"
+    table.appendChild(tbody)
+
+    for (let paraName of Object.keys(command.paraments)) {
+        let para = command.paraments[paraName]
+        tbody.innerHTML += `<tr><td><code>${paraName}</code></td><td><code>${para.type}</code></td><td>${para.description}</td></tr>`
+        
+        syntax += paraName + ", "
+
+        if (typeof para.example === "string") {
+            para.example = `"${para.example.replaceAll('"', '\\"')}"`
+        }
+        example += para.example + ", "
+    }
+
+    syntax = syntax.slice(0, -2) + ")"
+    example = example.slice(0, -2) + ")"
+
+    div.innerHTML += `<h1>${commandName}</h1>
+    ${command.description}
+    <br>
+    <pre>${example}</pre>
+    <h4>Paraments</h4>
+    <pre>${syntax}</pre>
+    ${table.outerHTML}`
+
+    if (command.notes) {
+        div.innerHTML += `<h4>Notes:</h4>${command.notes}`
+    }
+
+    return div
+}
+
+function buildCommandList() {
+    for (let category of commandList.Categories) {
+        let div = document.createElement("div")
+        div.classList.add("commandList-category")
+        div.dataset.category = category
+        div.innerText = category
+        commandListDiv.appendChild(div)
+    }
+    for (let commandName of Object.keys(commandList.Commands)) {
+        let command = commandList.Commands[commandName]
+
+        let commandDiv = document.createElement("div")
+        commandDiv.classList.add("commandList-command")
+        commandDiv.innerText = commandName
+        
+        let commandPopUpBg = document.createElement("div")
+        commandPopUpBg.classList.add("popup-bg", "hidden")
+        commandDiv.appendChild(commandPopUpBg)
+        commandDiv.addEventListener("click", () => {commandPopUpBg.classList.toggle("hidden")})
+
+        let commandPopUpContent = document.createElement("div")
+        commandPopUpContent.classList.add("popup-content")
+        commandPopUpContent.appendChild(buildCommandContainerDiv(commandName, command))
+        commandPopUpBg.appendChild(commandPopUpContent)
+
+        document.querySelector(`[data-category='${command.category}']`).appendChild(commandDiv)
+    }
+
+    for (let ele of document.querySelectorAll(".commandList-command")) {
+        ele.addEventListener("mouseenter", () => {
+            ele.style.backgroundColor = "#ececec";
+        })
+        ele.addEventListener("mouseleave", () => {
+            ele.style.backgroundColor = "";
+        })
+    }
+}
 
 function sleep(s, skip = false) {
     if (skip || s <= 0) return
@@ -474,23 +619,8 @@ function addSpeakerOnClick() {
     updateSpeakerPreview()
 }
 
-function getCursorLine() {
-    const pos = scriptInput.selectionStart;
-    const textBeforeCursor = scriptInput.value.substring(0, pos);
-    return textBeforeCursor.split('\n').length;
-}
-
 function updateScriptInput() {
     localStorage.setItem(scriptStorageKey, scriptInput.value);
-
-    let lineContent = scriptInput.value.split("\n")[getCursorLine()-1]
-    let funcName = lineContent.slice(0, lineContent.indexOf("("))
-    let hint = hints[funcName]
-    if (hint) {
-        hintBox.innerText = hint
-    } else {
-        hintBox.innerText = ""
-    }
 
     const lines = scriptInput.value.split("\n").length;
     if (previesLineCount === lines) return 
@@ -505,10 +635,6 @@ function updateScriptInput() {
         }
     }
 
-    jumpToInput.max = lines
-    if (jumpToInput.value > lines) {
-        jumpToInput.value = 0
-    }
     previesLineCount = lines
 }
 
@@ -539,10 +665,20 @@ async function extract() {
         return
     }
 
+    let emote = localStorage.getItem(emotesStorageKey)
+    try {
+        emote = JSON.parse(emote)
+    } catch (err) {
+        console.error(err)
+        console.log({emote})
+        alert("Error occured when parsing emote list, see dev console for more detail")
+        return
+    }
 
     let result = {
         version: settingVersion,
         speaker: speaker,
+        emote: emote,
         script: script,
         title: title
     }
@@ -592,6 +728,9 @@ async function load() {
 
     localStorage.setItem(bannerStorageKey, JSON.stringify(result.title))
     updateTitleFromStorage()
+
+    localStorage.setItem(emotesStorageKey, JSON.stringify(result.emote||'[]'))
+    updateEmotesPreview()
 }
 
 function updateTitleFromInput() {
@@ -605,7 +744,7 @@ function updateTitleFromInput() {
 function updateTitleFromStorage() {
     let banner = localStorage.getItem(bannerStorageKey)
     if (!banner) {return}
-    banner = JSON.parse(banner)
+    banner = JSON.parse(banner) || {}
 
     document.getElementById("bannerEdit-title").value = banner.title || "Title"
     document.getElementById("bannerEdit-subtitle").value = banner.subtitle || "SubTitle"
@@ -693,17 +832,14 @@ function emoteInputOnChange() {
 }
 
 function updateCodeLineHightlight(target = null) {
-    if (!target && target != "0") {
-        target = jumpToInput.value
+    target = String(target)
+    if (target === jumpToButton.dataset.target) {
+        jumpToButton.dataset.targete = "0"
+        target = "0"
     } else {
-        target = String(target)
-        if (target === jumpToInput.value) {
-            jumpToInput.value = "0"
-            target = "0"
-        }
-        jumpToInput.value = target
+        jumpToButton.dataset.target = target
     }
-
+        
     for (let span of lineNumbers.querySelectorAll("span")) {
         if (span.dataset.line === target) {
             span.classList.add("selected")
@@ -714,11 +850,10 @@ function updateCodeLineHightlight(target = null) {
 }
 
 function jumpTo() {
-    let breakLine = Number(jumpToInput.value)
+    let breakLine = Number(jumpToButton.dataset.value)
     if (breakLine <= 0) {
         playOrStop()
     } else {
         playOrStop(true, breakLine)
     }
-    
 }

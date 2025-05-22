@@ -76,11 +76,14 @@ body {
 }
 
 #typingArea:not(.hidden) {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
+.hidden {
+    display: none;
+}
 
 #typingDots {
     width: 35px;
@@ -342,20 +345,15 @@ textarea {
     border-collapse: collapse;
 }
 
-.previewTable th, td {
+.previewTable th,
+.previewTable td {
     border: 1px solid black;
     border-bottom: 2px solid black;
 }
 
 #jumpToInput {
     display: inline-block;
-    width: fit-content;
-}
-
-#hintBox {
-    border: 1px solid black;
-    padding: 5px;
-    color: #0103ff;
+    width: 30px;
 }
 
 .emote {
@@ -367,4 +365,72 @@ textarea {
 
 .self-message .emote {
     float: right;
+}
+
+#commandList {
+    width:fit-content;
+    height: 500px;
+    overflow-y: scroll;
+    border: 1px solid black;
+    padding: 5px;
+}
+
+.popup-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(128, 128, 128, 0.5);
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.popup-content {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width: 80%;
+    background-color: white;
+    padding: 20px;
+    overflow: auto;
+    cursor: default;
+}
+
+.commandList-category {
+    font-weight: bolder;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.commandList-command {
+    font-weight: 200;
+    font-size: 16px;
+    cursor: help;
+}
+
+.paramentTable th,
+.paramentTable td {
+    border: 1px solid black;
+    border-bottom: 2px solid black;
+    padding: 5px;
+}
+
+code {
+    background-color: #ececec;
+    border-radius: .25rem;
+    font-size: .875em;
+    padding: .15rem .3rem;
+}
+
+pre {
+    margin-left: 10px;
+    border-radius: .25rem;
+    background-color: #ececec;
+    padding: 5px;
 }
