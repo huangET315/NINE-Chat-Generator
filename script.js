@@ -834,7 +834,7 @@ function emoteInputOnChange() {
 function updateCodeLineHightlight(target = null) {
     target = String(target)
     if (target === jumpToButton.dataset.target) {
-        jumpToButton.dataset.targete = "0"
+        jumpToButton.dataset.target = "0"
         target = "0"
     } else {
         jumpToButton.dataset.target = target
@@ -850,9 +850,9 @@ function updateCodeLineHightlight(target = null) {
 }
 
 function jumpTo() {
-    let breakLine = Number(jumpToButton.dataset.value)
+    let breakLine = Number(jumpToButton.dataset.target)
     if (breakLine <= 0) {
-        playOrStop()
+        alert("Click on the number on the Code Line Display to mark that line as the target to Jump To")
     } else {
         playOrStop(true, breakLine)
     }
