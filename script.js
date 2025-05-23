@@ -137,9 +137,6 @@ function getScriptInputCharsPerLine() {
     const paddingRight = parseFloat(style.paddingRight);
     const innerWidth = scriptInput.clientWidth - paddingLeft - paddingRight;
 
-    console.log(innerWidth)
-    console.log(charWidth)
-
     return Math.floor(innerWidth / charWidth);
 }
 
@@ -402,45 +399,103 @@ function parseParams(str) {
     if (str.startsWith('(') && str.endsWith(')')) {
         str = "[" + str.slice(1, -1) + "]"
     } else {
-        throw "params parse error"
+        throw "bracket error"
     }
     return JSON.parse(str)
 }
+
+function diagnosis(funcName, err) {
+    err = String(err)
+
+    if (err === "TypeError: Cannot read properties of undefined (reading 'name')") {
+        return "Is the speakerIndex in the speaker list? The index begain at 0!"
+    }
+    if (err === "bracket error") {
+        return "Did you put a set of brackets () outside your paraments?"
+    }
+    if (err.includes("Unexpected token ','")) {
+        return "Did you accidently put an extra comma (,) at somewhere?"
+    }
+    if (err.includes("Unexpected token ']'")) {
+        return "Did you accidently put an extra comma (,) at the end of all paraments?"
+    }
+    if (err.includes("Unterminated string in JSON")) {
+        return "Did you forgot to put the double quotation mark (\") at the end of a string parament?";
+    }
+    if (err.includes("Unexpected token '''")) {
+        return "Did you put single quotation marks (\') around the a string parament? They are suppose to be double quotation marks (\")"
+    }
+    if (err.includes("Expected ',' or ']' after array element")) {
+        return 'Did you forgot to put the double quotation mark (\") at the start of a string parament?\nOr you forgot to put backslash (\\) before double quotaion marks (\") in this string parament? They are suppose to look like this (\\")'
+    }
+
+    switch (funcName) {
+        case "speak":
+            if (err === "TypeError: content.replaceAll is not a function") {
+                return "Did you forgot to put double quotation marks (\") around the content?";
+            }
+            if (err === "TypeError: Cannot read properties of undefined (reading 'replaceAll')") {
+                return "Did you only put 1 parament into speak? There suppose to be 3";
+            }
+    }
+
+    return "Unable to diagnosis this error";
+        
+}
+
 
 async function resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait = false) {
     if (codeLine.length <= 0) {return}
     if (codeLine.trim().startsWith("//")) {return}
 
-    let funcName = codeLine.slice(0, codeLine.indexOf("("))
-    let params = parseParams(codeLine.slice(codeLine.indexOf("(")))
+    let funcName;
+    let params;
 
-    switch (funcName) {
-        case "speak":
-            await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2], lineNum, skipWait)
-            break
-        case "emote":
-            await speakEmote(params[0], speaker[params[0]].name, speaker[params[0]].avatar, emotes[params[1]])
-        case "wait":
-            await sleep(params[0], skipWait)
-            break
-        case "system":
-            let shouldScroll = isScrolledToBottom(chatBox)
-            let div = document.createElement("div")
-            div.classList.add("systemMessage")
-            div.dataset.createdBy = lineNum
-            div.innerText = params[0]
-            chatBox.appendChild(div)
-            if (shouldScroll) {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-            break
-        case "setPOV":
-            if (pov !== -1) {
-                alert("You should only setPOV once in a setting!")
-                return
-            }
-            pov = params[0]
+    try {
+        funcName = codeLine.slice(0, codeLine.indexOf("(")).trim()
+        params = parseParams(codeLine.slice(codeLine.indexOf("(")).trim())
+
+        switch (funcName) {
+            case "speak":
+                await speak(params[0], speaker[params[0]].name, speaker[params[0]].avatar, params[1], params[2], lineNum, skipWait)
+                break
+            case "emote":
+                await speakEmote(params[0], speaker[params[0]].name, speaker[params[0]].avatar, emotes[params[1]])
+            case "wait":
+                await sleep(params[0], skipWait)
+                break
+            case "system":
+                let shouldScroll = isScrolledToBottom(chatBox)
+                let div = document.createElement("div")
+                div.classList.add("systemMessage")
+                div.dataset.createdBy = lineNum
+                div.innerText = params[0]
+                chatBox.appendChild(div)
+                if (shouldScroll) {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+                break
+            case "setPOV":
+                if (pov !== -1) {
+                    alert("You should only setPOV once in a setting!")
+                    return "error";
+                }
+                pov = params[0]
+        }
+    } catch (err) {
+        alert(`An error occured when resolving line ${lineNum}
+
+    Error detail:
+        Command name: ${funcName}
+        Raw paraments: ${codeLine.slice(codeLine.indexOf("("))}
+        Parsed Paraments: ${params}
+        Error: ${err}
+
+    Diagnosis: ${diagnosis(funcName, err)}`)
+    console.log(String(err))
+        return "error";
     }
+    
 }
 
 async function waitUntilUnPause() {
@@ -472,15 +527,24 @@ async function startAnimation(speaker, emotes, actions, skipWait = false, breakL
         if (isPausing) {
             await waitUntilUnPause()
         }
-        await resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait)
+
+        if (await resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait) === "error") {return "error"}
         lineNum ++
     }
 
-    await sleep(2);
-    end()
+    if (!skipWait) {
+        await sleep(2)
+        end()
+    }
 }
 
-async function playOrStop(skipWait = false, breakLine = -1) {
+async function playOrStop(skipWait = false, breakLine = -1, debug = false) {
+    let err;
+
+    if (debug) {
+        skipWait = true
+        breakLine = -1
+    }
     switch (playStopButton.innerText) {
         case "Play":
             let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
@@ -496,7 +560,9 @@ async function playOrStop(skipWait = false, breakLine = -1) {
             isPlaying = true
             isPausing = false
 
-            await startAnimation(speaker, emotes, script, skipWait, breakLine);
+            let err = await startAnimation(speaker, emotes, script, skipWait, breakLine);
+
+            console.log(err)
 
             playStopButton.innerText = "Play"
 
@@ -504,6 +570,11 @@ async function playOrStop(skipWait = false, breakLine = -1) {
             pauseResumeButton.innerText = "Pause"
 
             isPlaying = false
+
+            if (debug && !err) {
+                playOrStop()
+            } 
+
             break
         case "Stop":
             playStopButton.innerText = "Play"
@@ -679,7 +750,7 @@ function updateScriptInput() {
             }
             
             gap *= -1
-            
+
             if (getCursorLine() + gap < target) {
                 updateCodeLineHightlight(String(target - gap))
             }
