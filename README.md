@@ -17,7 +17,6 @@ Script version only change when their is a syntax change for an already-exist fu
 
 # Knowing Issues
 Issues I already know and will be fix soon
-- In code line display, the selected Jump To target line will stay at that certain line number, not followed by the content (Extremely hard)
   
 # WIP
 Things I'm currently working on

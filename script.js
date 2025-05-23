@@ -662,14 +662,26 @@ function updateScriptInput() {
     const linesArray = scriptInput.value.split("\n");
     const lines = linesArray.length;
 
+    let gap = lines - previousLineCount
+    let target = Number(jumpToButton.dataset.target)
+
     if (previousLineCount != lines) {
-        if (lines - previousLineCount > 0) {
+        if (gap > 0) {
             for (let i = previousLineCount + 1; i <= lines; i++) {
                 lineNumbers.innerHTML += `<span data-line="${i}" onclick="updateCodeLineHightlight(${i})">${i}<br></span>`
+            }
+            if (getCursorLine() - gap < target) {
+                updateCodeLineHightlight(String(target + gap))
             }
         } else {
             for (let i = previousLineCount; i > lines; i--) {
                 lineNumbers.removeChild(lineNumbers.querySelector(`[data-line='${i}']`))
+            }
+            
+            gap *= -1
+            
+            if (getCursorLine() + gap < target) {
+                updateCodeLineHightlight(String(target - gap))
             }
         }
     }
