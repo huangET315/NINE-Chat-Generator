@@ -37,6 +37,34 @@ const bannerStorageKey = "banner"
 const emotesStorageKey = "emotes"
 const settingVersion = "1.0"
 
+const quoteMap = [
+    "'",
+    '“', '”',
+    '‘', '’',
+    '„', '‚', '‛', 
+    '❝', '❞'
+];
+
+function escapeAllQuotes(input) {
+    const quoteChars = [
+        "'",
+        '“', '”',
+        '‘', '’',
+        '„', '‚', '‛',
+        '❝', '❞'
+    ];
+
+    const quoteSet = new Set(quoteChars);
+    return [...input].map(ch => {
+        if (quoteSet.has(ch)) {
+        const hex = ch.charCodeAt(0).toString(16).padStart(4, '0');
+        return `\\u${hex}`;
+        }
+        return ch;
+    }).join('');
+}
+
+
 const commandList = {
     "Categories": [
         "Message",
@@ -394,6 +422,73 @@ async function speakEmote(id, name, avatar, emote, lineNum, skipWait = false) {
     }   
 }
 
+function parseValue(val) {
+    if (!isNaN(val)) return Number(val);
+    return val
+}
+
+function parseParams(str) {
+    if (!str.startsWith('(') || !str.endsWith(')')) {
+        throw "bracket error"
+    }
+
+    str = str.slice(1, -1).trim()
+    let paraments = []
+    let isInString = false
+    const startQuotes = ['"', "'", '“', '‘', "«", "‹"]
+    const endQuotes = ['"', "'", '”', '’', "»", "›"]
+    let currentPairIndex = -1
+    let current = ""
+    let escapeNext = false
+
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i]
+
+        if (isInString) {
+            if (escapeNext) {
+                current += char
+                escapeNext = false
+            } else if (char === startQuotes[currentPairIndex] || char === endQuotes[currentPairIndex]) {
+                isInString = false
+                paraments.push(current)
+                current = ""
+            } else if (char === "\\") {
+                escapeNext = true
+            } else {
+                current += char
+            }
+        } else {
+            let startQuotesIndex = startQuotes.indexOf(char)
+            let endQuotesIndex = endQuotes.indexOf(char)
+            if (startQuotesIndex != -1 || endQuotesIndex != -1) {
+                currentPairIndex = Math.max(startQuotesIndex, endQuotesIndex)
+                isInString = true;
+                current = '';
+            }
+            else if (char === ',') {
+                if (current.trim()) {
+                    paraments.push(parseValue(current.trim()));
+                }
+                current = '';
+            }
+            else {
+                current += char;
+            }
+        }
+    }
+
+    if (isInString) {
+        throw "string not closed"
+    }
+
+    if (current.trim()) {
+        paraments.push(parseValue(current.trim()));
+    }
+
+    return paraments
+}
+
+/*
 function parseParams(str) {
     str = str.trim()
     if (str.startsWith('(') && str.endsWith(')')) {
@@ -403,6 +498,7 @@ function parseParams(str) {
     }
     return JSON.parse(str)
 }
+*/
 
 function diagnosis(funcName, err) {
     err = String(err)
@@ -412,6 +508,9 @@ function diagnosis(funcName, err) {
     }
     if (err === "bracket error") {
         return "Did you put a set of brackets () outside your paraments?"
+    }
+    if (err === "string not closed") {
+        return "Did you forgot to close your string or didn't put a backslash (\\) in front of the qtotaion mark(s) inside the string?"
     }
     if (err.includes("Unexpected token ','")) {
         return "Did you accidently put an extra comma (,) at somewhere?"
@@ -539,8 +638,6 @@ async function startAnimation(speaker, emotes, actions, skipWait = false, breakL
 }
 
 async function playOrStop(skipWait = false, breakLine = -1, debug = false) {
-    let err;
-
     if (debug) {
         skipWait = true
         breakLine = -1
@@ -549,7 +646,6 @@ async function playOrStop(skipWait = false, breakLine = -1, debug = false) {
         case "Play":
             let speaker = JSON.parse(localStorage.getItem(speakerStorageKey))
             let script = scriptInput.value
-                .replace(/[\u2018\u2019\u201B\u201C\u201D\u00AB\u00BB]/g, '"')
             let emotes = JSON.parse(localStorage.getItem(emotesStorageKey))
 
             playStopButton.innerText = "Stop"
@@ -561,8 +657,6 @@ async function playOrStop(skipWait = false, breakLine = -1, debug = false) {
             isPausing = false
 
             let err = await startAnimation(speaker, emotes, script, skipWait, breakLine);
-
-            console.log(err)
 
             playStopButton.innerText = "Play"
 
