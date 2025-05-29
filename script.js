@@ -143,7 +143,31 @@ const commandList = {
                 }
             },
             "notes": "This command is ment to be used only once before the first message"
-        }
+        },
+        "startTyping": {
+            "category": "Setting",
+            "description": "Let a speaker start typing, this is only visually, so it won't block other commands",
+            "paraments": {
+                "speakerIndex": {
+                    "type": "integer",
+                    "description": "Index of the speaker",
+                    "example": 0
+                }
+            },
+            "notes": "This command is ment to be used with <code>stopTyping</code>"
+        },
+        "stopTyping": {
+            "category": "Setting",
+            "description": "Let a speaker stop typing, this is only visually, so it won't block other commands",
+            "paraments": {
+                "speakerIndex": {
+                    "type": "integer",
+                    "description": "Index of the speaker",
+                    "example": 0
+                }
+            },
+            "notes": "This command is ment to be used with <code>startTyping</code>"
+        },
     }
     
 };
@@ -171,14 +195,7 @@ function getScriptInputCharsPerLine() {
 main()
 
 async function main() {
-    scriptInput.value = localStorage.getItem(scriptStorageKey)
-    
-    for (let ele of document.querySelectorAll('.popup-bg')) {
-        ele.addEventListener("click", (e) => {
-            if (e.target != ele) return
-            ele.classList.toggle("hidden")
-        })
-    }   
+    scriptInput.value = localStorage.getItem(scriptStorageKey)  
 
     updateScriptInput()
     updateSpeakerPreview()
@@ -189,6 +206,13 @@ async function main() {
     window.addEventListener("beforeunload", () => {
         localStorage.setItem(scriptStorageKey, scriptInput.value);
     })
+
+    for (let ele of document.querySelectorAll('.popup-bg')) {
+        ele.addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) return
+            ele.classList.toggle("hidden")
+        })
+    } 
 }
 
 function buildCommandContainerDiv(commandName, command) {
@@ -277,9 +301,34 @@ function sleep(s, skip = false) {
     return new Promise(resolve => setTimeout(resolve, s*1000));
 }
 
-function toggleTyping(name) {
-    typer.innerText = name
-    typingArea.classList.toggle('hidden')
+function startTyping(name) {
+    let typers = JSON.parse(typer.dataset.typers || '[]')
+    typers.push(name)
+    typer.dataset.typers = JSON.stringify(typers)
+    updateTypingArea()
+}
+
+function stopTyping(name) {
+    let typers = JSON.parse(typer.dataset.typers || '[]')
+    const index = typers.indexOf(name);
+    if (index > -1) {
+        typers.splice(index, 1);
+    }
+    typer.dataset.typers = JSON.stringify(typers)
+    updateTypingArea()
+}
+
+function updateTypingArea() {
+    let typers = JSON.parse(typer.dataset.typers || '[]')
+    typer.innerText = ''
+
+    if (typers.length <= 0) {
+        typingArea.classList.add('hidden')
+        return
+    }
+
+    typer.innerText = typers.join(", ")
+    typingArea.classList.remove('hidden')
 }
 
 function isScrolledToBottom(ele) {
@@ -326,9 +375,9 @@ async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = 
     }
 
     if (typingTime > 0) {
-        toggleTyping(name)
+        startTyping(name)
         await sleep(typingTime, skipWait)
-        toggleTyping(name)
+        stopTyping(name)
     }
 
     if (content === "") {return}
@@ -488,18 +537,6 @@ function parseParams(str) {
     return paraments
 }
 
-/*
-function parseParams(str) {
-    str = str.trim()
-    if (str.startsWith('(') && str.endsWith(')')) {
-        str = "[" + str.slice(1, -1) + "]"
-    } else {
-        throw "bracket error"
-    }
-    return JSON.parse(str)
-}
-*/
-
 function diagnosis(funcName, err) {
     err = String(err)
 
@@ -536,6 +573,7 @@ function diagnosis(funcName, err) {
             if (err === "TypeError: Cannot read properties of undefined (reading 'replaceAll')") {
                 return "Did you only put 1 parament into speak? There suppose to be 3";
             }
+            break
     }
 
     return "Unable to diagnosis this error";
@@ -560,6 +598,7 @@ async function resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait = fa
                 break
             case "emote":
                 await speakEmote(params[0], speaker[params[0]].name, speaker[params[0]].avatar, emotes[params[1]])
+                break
             case "wait":
                 await sleep(params[0], skipWait)
                 break
@@ -580,6 +619,12 @@ async function resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait = fa
                     return "error";
                 }
                 pov = params[0]
+                break
+            case "startTyping":
+                startTyping(speaker[params[0]].name);
+                break
+            case "stopTyping":
+                stopTyping(speaker[params[0]].name);
         }
     } catch (err) {
         alert(`An error occured when resolving line ${lineNum}
@@ -609,6 +654,8 @@ async function startAnimation(speaker, emotes, actions, skipWait = false, breakL
     previesSpeaker = -1;
     previesContainer = '';
     pov = -1;
+    typer.dataset.typers = "[]"
+    updateTypingArea()
 
     await sleep(1, skipWait);
 
