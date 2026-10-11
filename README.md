@@ -17,10 +17,11 @@ Script version only change when their is a syntax change for an already-exist fu
 
 # Knowing Issues
 Issues I already know and will be fix soon
-· LocalStorage size limit might be reached if a lot of images (or high-res images) were used as avatar, which will prevent new speakers with avatar to be added.
+- LocalStorage size limit might be reached if a lot of images (or high-res images) were used as avatar, which will prevent new speakers with avatar to be added.
   
 # WIP
 Things I'm currently working on
+- Rewrite / intergrate into React or at least organize the code to make it more readable / clear
   
 # Ideas
 Ideas I have but have no ideas how to, followed by the chance they actually come true
