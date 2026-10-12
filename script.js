@@ -401,7 +401,7 @@ async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = 
         let message = document.createElement("div")
         message.classList.add("message")
         message.dataset.createdBy = lineNum
-        chatBox.appendChild(message)
+        chatBox.appendChild(wrapAnimationElement(message))
         
         let img = document.createElement("img")
         img.classList.add("avatar")
@@ -451,7 +451,7 @@ async function speakEmote(id, name, avatar, emote, lineNum, skipWait = false) {
         let message = document.createElement("div")
         message.classList.add("message")
         message.dataset.createdBy = lineNum
-        chatBox.appendChild(message)
+        chatBox.appendChild(wrapAnimationElement(message))
         
         let img = document.createElement("img")
         img.classList.add("avatar")

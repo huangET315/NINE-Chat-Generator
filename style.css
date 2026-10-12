@@ -197,11 +197,13 @@ body {
     background-color: rgb(167, 80, 222);
     color: white;
     margin-left: auto;
+    margin-right: 10px;
 }
 
 .self-message .bubble::after{
     border-top-color: rgb(167, 80, 222);
-    left: auto;
+    left: unset;
+    right: -8px;
 }
 
 #userList {
@@ -360,10 +362,11 @@ textarea {
 }
 
 .emote {
-    display: inline-block;
+    display: block;
     width: 150px;
     height: 150px;
     animation: fadeIn 0.4s ease;
+    margin: 2px;
 }
 
 .self-message .emote {
