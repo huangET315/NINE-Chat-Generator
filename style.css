@@ -437,3 +437,9 @@ pre {
     background-color: #ececec;
     padding: 5px;
 }
+
+.animationWrapper {
+    position: relative;
+    overflow: hidden;
+    flex: 0 0 auto;
+}

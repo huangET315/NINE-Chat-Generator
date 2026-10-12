@@ -332,8 +332,17 @@ function updateTypingArea() {
 }
 
 function isScrolledToBottom(ele) {
-  return ele.scrollHeight - ele.scrollTop <= ele.clientHeight + 1;
+    return ele.scrollHeight - ele.scrollTop <= ele.clientHeight + 1;
 }
+
+
+function wrapAnimationElement(ele) {
+    let wrapper = document.createElement("div")
+    wrapper.classList.add("animationWrapper")
+    wrapper.appendChild(ele)
+    return wrapper
+}
+
 
 function end() {
     let shouldScroll = isScrolledToBottom(chatBox)
@@ -355,7 +364,7 @@ function end() {
     wrapper.appendChild(text)
     wrapper.appendChild(right)
 
-    chatBox.appendChild(wrapper)
+    chatBox.appendChild(wrapAnimationElement(wrapper))
 
     if (shouldScroll) {
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -384,6 +393,8 @@ async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = 
 
     let bubble = buildBubble(content);
 
+    let wrapper = wrapAnimationElement(bubble);
+
     let shouldScroll = isScrolledToBottom(chatBox)
 
     if (id != previesSpeaker) {
@@ -416,7 +427,7 @@ async function speak(id, name, avatar, content, typingTime, lineNum, skipWait = 
         }
     }
 
-    previesContainer.appendChild(bubble)
+    previesContainer.appendChild(wrapper)
 
     if (shouldScroll) {
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -432,6 +443,8 @@ async function speakEmote(id, name, avatar, emote, lineNum, skipWait = false) {
     emoteImg.classList.add("emote")
     emoteImg.src = emote
 
+    let wrapper = wrapAnimationElement(emoteImg);
+
     let shouldScroll = isScrolledToBottom(chatBox)
 
     if (id != previesSpeaker) {
@@ -464,7 +477,7 @@ async function speakEmote(id, name, avatar, emote, lineNum, skipWait = false) {
         }
     }
 
-    previesContainer.appendChild(emoteImg)
+    previesContainer.appendChild(wrapper)
 
     if (shouldScroll) {
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -608,7 +621,7 @@ async function resolveCodeLine(speaker, emotes, codeLine, lineNum, skipWait = fa
                 div.classList.add("systemMessage")
                 div.dataset.createdBy = lineNum
                 div.innerText = params[0]
-                chatBox.appendChild(div)
+                chatBox.appendChild(wrapAnimationElement(div))
                 if (shouldScroll) {
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }
