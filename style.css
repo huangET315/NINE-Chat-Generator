@@ -235,6 +235,8 @@ body {
 .container {
     width: 80%;
     padding-left: 7px;
+    display: flex;
+    flex-direction: column;
 }
 
 .self-message .container {
