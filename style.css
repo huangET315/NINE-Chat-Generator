@@ -367,7 +367,7 @@ textarea {
 }
 
 .self-message .emote {
-    float: right;
+    margin-left: auto;
 }
 
 #commandList {
